@@ -21,5 +21,4 @@ else {
     echo "Hello guest! Please <a href='login.php'>login</a><br>";
   }
 }
-
 ?>
