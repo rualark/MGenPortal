@@ -2,6 +2,7 @@
 
 $auth_error = "";
 $uid = 0;
+$ua = 0;
 
 function lastAct() {
   GLOBAL $ml, $uid;
@@ -46,7 +47,7 @@ function logout () {
 }
 
 function login () {
-  GLOBAL $ml, $uid, $ua;
+  GLOBAL $ml, $uid;
   ini_set("session.use_trans_sid", true);
   session_start();
   if (isset($_SESSION['mgen_u_id'])) {
