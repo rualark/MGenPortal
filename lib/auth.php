@@ -46,7 +46,7 @@ function logout () {
 }
 
 function login () {
-  GLOBAL $ml, $uid;
+  GLOBAL $ml, $uid, $ua;
   ini_set("session.use_trans_sid", true);
   session_start();
   if (isset($_SESSION['mgen_u_id'])) {
@@ -57,6 +57,7 @@ function login () {
       SetCookie("mgen_pass", $_COOKIE['mgen_pass'], time() + 50000, '/');
       $uid = $_SESSION['mgen_u_id'];
       lastAct();
+      load_user();
       return 1;
     }
     else {
@@ -68,8 +69,8 @@ function login () {
         SetCookie("mgen_pass", md5($w['u_pass'].$w['u_pass']), time() + 50000, '/');
         $uid = $_SESSION['mgen_u_id'];
         lastAct();
+        load_user();
         return 1;
-
       }
       else return 0;
     }
@@ -83,6 +84,7 @@ function login () {
         $uid = $_SESSION['mgen_u_id'];
         $_SESSION['mgen_u_id'] = $uid;
         lastAct();
+        load_user();
         return 1;
       }
       else {
@@ -95,5 +97,12 @@ function login () {
       return 0;
     }
   }
+}
+
+function load_user() {
+  GLOBAL $ml, $uid, $ua;
+  $r = mysqli_query($ml,"SELECT * FROM user WHERE u_id='$uid'");
+  echo mysqli_error($ml);
+  $ua = mysqli_fetch_assoc($r);
 }
 ?>
