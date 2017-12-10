@@ -11,7 +11,7 @@ login();
 include "template/menu.php";
 
 echo "<div class=container>";
-echo "<br><h2 align=center>Uploads</h2>";
+echo "<br><h2 align=center>Uploaded files</h2>";
 show_uploads();
 include "template/footer.php";
 ?>

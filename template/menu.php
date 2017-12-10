@@ -30,7 +30,7 @@
         <?php
         if ($uid) {
           ?>
-          <li class=nav-item><a class=nav-link href="upload.php"><b>Upload</b></a></li>
+          <li class=nav-item><a class=nav-link href="new.php"><b>Upload</b></a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>

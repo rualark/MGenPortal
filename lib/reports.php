@@ -2,7 +2,6 @@
 
 function show_job($w, $c) {
   GLOBAL $bheight;
-  $job_link = "<a href='job.php?j_id=$w[j_id]'>";
   if (!$w['j_id']) return "-";
   if ($w['j_state'] == 0)
     return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
@@ -18,13 +17,13 @@ function show_job($w, $c) {
 }
 
 function show_uploads() {
-  GLOBAL $ml, $uid, $bheight;
+  GLOBAL $ml, $uid;
   echo "<table class='table table-hover'>"; // table-striped
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>Uploaded</th>";
   echo "<th scope=col style='text-align: center;'>User</th>";
-  echo "<th scope=col style='text-align: center;'>Source</th>";
+  echo "<th scope=col style='text-align: center;'>File</th>";
   echo "<th scope=col style='text-align: center;'>Analysis</th>";
   echo "<th scope=col style='text-align: center;'>Correction</th>";
   echo "<th scope=col style='text-align: center;'>MP3</th>";
@@ -68,7 +67,7 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $ml, $uid, $bheight, $f_id, $wf, $ftypes;
+  GLOBAL $uid, $f_id, $wf, $ftypes;
   echo "<div class=container>";
   echo "<br><h2 align=center>$wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
@@ -76,7 +75,7 @@ function show_upload() {
     echo "<form action=store.php method=post>";
     echo "<input type=hidden name=f_id value='$f_id'>";
     echo "<input type=hidden name=action value=f_type>";
-    echo "Type: ";
+    echo "<b>Type:</b> ";
     echo "<select class=\"custom-select\" name=f_type onChange='this.form.submit();'>";
     foreach ($ftypes as $key => $val) {
       echo "<option value=$key";
@@ -86,24 +85,24 @@ function show_upload() {
     echo "</select>";
     echo "</form>";
   } else {
-    echo "<p>Type: " . get_typename($wf['f_type']) . "</p>";
+    echo "<p><b>Type:</b> " . get_typename($wf['f_type']) . "</p>";
   }
-  echo "<p>Visibility: ";
+  echo "<p><b>Visibility:</b> ";
   if ($wf['f_private']) echo "private";
   else echo "public";
   echo "</p>";
-  echo "<p>Upload time: $wf[f_time]</p>";
+  echo "<p><b>Upload time:</b> $wf[f_time]</p>";
 }
 
 function show_jobs($f_id) {
-  GLOBAL $ml, $uid, $bheight, $ftypes;
+  GLOBAL $ml, $ftypes;
   echo "<table class='table table-hover'>"; // table-striped
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>State</th>";
-  echo "<th scope=col style='text-align: center;'>Created</th>";
-  echo "<th scope=col style='text-align: center;'>Started</th>";
-  echo "<th scope=col style='text-align: center;'>Duration</th>";
+  echo "<th scope=col style='text-align: center;'>Job created</th>";
+  echo "<th scope=col style='text-align: center;'>Job started</th>";
+  echo "<th scope=col style='text-align: center;'>Duration (s)</th>";
   echo "<th scope=col style='text-align: center;'>Type</th>";
   echo "<th scope=col style='text-align: center;'>Class</th>";
   echo "</tr>\n";
