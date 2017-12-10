@@ -1,0 +1,18 @@
+<div class="col-md-4" style="margin: 0 auto;">
+  <form action=login.php method=post>
+    <?php
+    echo "<br><p class=text-danger><b>$auth_error</b></p>";
+    ?>
+    <div class="form-group">
+      <label for="login"><b>Email address</b></label>
+      <input type="email" class="form-control" id="login" name=login placeholder="Enter email">
+    </div>
+    <div class="form-group">
+      <label for="password"><b>Password</b></label>
+      <input type="password" class="form-control" id="password" name=password placeholder="Password">
+    </div>
+    <button type=submit value=login name=log_in class="btn btn-primary">Login</button>
+  </form>
+  <p><a href="reg.php">Forgot your password?</a></p>
+  <p>New to Composer Tracker? <a href="reg.php">Create an account.</a></p>
+</div>

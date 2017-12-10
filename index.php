@@ -6,8 +6,8 @@ require_once "lib/auth.php";
 $title = "Composer Tracker";
 
 if (login()) {
-  echo "Your session is logged in, $ua[u_name]<br>";
-  echo "<a href='login.php?action=out'>Sign out</a>";
+  //echo "Your session is logged in, $ua[u_name]<br>";
+  //echo "<a href='login.php?action=out'>Sign out</a>";
 }
 else {
   //echo "Hello guest! Please <a href='login.php'>login</a> or register:<br>";
@@ -15,4 +15,11 @@ else {
 }
 
 include "template/menu.php";
+if ($uid) {
+  include "template/main.php";
+}
+else {
+  include "template/guest.php";
+}
+include "template/footer.php";
 ?>

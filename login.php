@@ -24,20 +24,21 @@ else {
       die ("<script language=javascript>location.replace('index.php');</script>");
     }
     else {
-      echo "$auth_error";
     }
   }
 }
 
 if (!$uid) {
-  echo "You need to log in<br>";
-  echo "<form action=login.php method=post>";
-  echo "Login: ";
-  echo "<input type=text name=login /><br>";
-  echo "Password: ";
-  echo "<input type=password name=password /><br>";
-  echo "<input type=submit value=login name=log_in />";
-  echo "</form>";
+  include "template/menu.php";
+  include "template/login.php";
+  include "template/footer.php";
+  //echo "<form action=login.php method=post>";
+  //echo "Login: ";
+  //echo "<input type=text name=login /><br>";
+  //echo "Password: ";
+  //echo "<input type=password name=password /><br>";
+  //echo "<input type=submit value=login name=log_in />";
+  //echo "</form>";
   //echo md5(md5("service")."265");
 }
 
