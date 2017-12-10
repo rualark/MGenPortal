@@ -34,3 +34,6 @@ body {
   background-color: #902000;
   border-color: #fff;
 }
+.container {
+  max-width: 1050px; /* or 950px */
+}
