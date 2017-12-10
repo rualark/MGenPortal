@@ -6,7 +6,7 @@ $ua = 0;
 
 function lastAct() {
   GLOBAL $ml, $uid;
-  mysqli_query($ml, "UPDATE user SET u_lastseen=NOW() WHERE u_id='$uid'");
+  mysqli_query($ml, "UPDATE user SET u_lastact=NOW() WHERE u_id='$uid'");
 }
 
 function enter() {
@@ -105,5 +105,14 @@ function load_user() {
   $r = mysqli_query($ml,"SELECT * FROM user WHERE u_id='$uid'");
   echo mysqli_error($ml);
   $ua = mysqli_fetch_assoc($r);
+}
+
+function show_reg_form() {
+  echo "<form method=post action=reg.php>";
+  echo "Name: <input id=name type=text name=name /><br />";
+  echo "Email: <input id=login type=text name=login /><br />";
+  echo "Password: <input id=password type=password name=password /><br />";
+  echo "<input type=submit name=register value='Sign up for CTracker'>";
+  echo "</form>";
 }
 ?>
