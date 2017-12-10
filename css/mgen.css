@@ -1,0 +1,47 @@
+/* Move down content because we have a fixed navbar that is 3.5rem tall */
+body {
+  padding-top: 3.5rem;
+}
+.jumbotron {
+  background-image: url("../img/bg.jpg");
+  background-color: #17234E;
+  margin-bottom: 0;
+  min-height: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+.btn-brown {
+  background-color: #901000;
+  color: #ffffff;
+}
+.btn-brown:hover {
+  background-color: #800000;
+  color: #ffffff;
+}
+.btn-outline-brown {
+  background-color: #000000;
+  color: #b02000;
+  border: 1px solid #b02000;
+}
+.btn-outline-brown:hover {
+  background-color: #b02000;
+  color: #ffffff;
+}
+.navbar-black {
+  background-color: #000000;
+  color: white;
+}
+.navbar-brand {
+  color: white;
+}
+.navbar-brand:hover {
+  color: #bbbbbb;
+}
+.nav-link {
+  color: white;
+}
+.nav-link:hover {
+  color: #bbbbbb;
+}
