@@ -4,7 +4,7 @@ require_once "lib/config.php";
 require_once "lib/auth.php";
 require_once "lib/reports.php";
 
-$title = "Composer Tracker: Upload";
+$title = "Composer Tracker: File";
 $f_id = secure_variable("f_id");
 
 login();
