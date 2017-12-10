@@ -8,6 +8,7 @@ if (login()) {
   echo "<a href='login.php?action=out'>Sign out</a>";
 }
 else {
-  echo "Hello guest! Please <a href='login.php'>login</a><br>";
+  echo "Hello guest! Please <a href='login.php'>login</a> or register:<br>";
+  show_reg_form();
 }
 ?>
