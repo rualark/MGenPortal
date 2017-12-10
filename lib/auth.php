@@ -6,12 +6,49 @@ $ua = 0;
 
 function lastAct() {
   GLOBAL $ml, $uid;
-  mysqli_query($ml, "UPDATE user SET u_lastact=NOW() WHERE u_id='$uid'");
+  mysqli_query($ml, "UPDATE users SET u_lastact=NOW() WHERE u_id='$uid'");
+  echo mysqli_error($ml);
+}
+
+function add_auth_error($st) {
+  GLOBAL $auth_error;
+  if ($auth_error != "") $auth_error .= "<br>";
+  $auth_error .= $st;
+}
+
+function regdata_valid() {
+  GLOBAL $ml, $login, $password, $auth_error;
+  $r = mysqli_query($ml,"SELECT * FROM users WHERE u_login='$login'");
+  echo mysqli_error($ml);
+  if (mysqli_errno($ml)) {
+    $auth_error = "Internal error";
+    return 0;
+  }
+  if (mysqli_num_rows($r) > 0) {
+    $auth_error = "This email is already taken";
+  }
+  if (strlen($password) < '7') {
+    add_auth_error("Your password should contain at least 7 characters!");
+  }
+  elseif(!preg_match("#[0-9]+#",$password)) {
+    add_auth_error("Your password should contain at least 1 number!");
+  }
+  elseif(!preg_match("#[A-Z]+#",$password)) {
+    add_auth_error("Your password should contain at least 1 capital letter!");
+  }
+  elseif(!preg_match("#[a-z]+#",$password)) {
+    add_auth_error("Your password should contain at least 1 lowercase letter!");
+  }
+  if (!filter_var($login, FILTER_VALIDATE_EMAIL)) {
+    add_auth_error("Email address format is wrong");
+  }
+  if ($auth_error != "") return 0;
+  return 1;
 }
 
 function enter() {
   GLOBAL $ml, $login, $password, $auth_error, $uid;
-  $r = mysqli_query($ml,"SELECT * FROM user WHERE u_login='$login'");
+  $r = mysqli_query($ml,"SELECT * FROM users WHERE u_login='$login'");
   echo mysqli_error($ml);
   if (mysqli_num_rows($r) == 1) {
     $w = mysqli_fetch_assoc($r);
@@ -62,7 +99,7 @@ function login () {
       return 1;
     }
     else {
-      $r = mysqli_query($ml,"SELECT * FROM user WHERE u_id='{$_SESSION['mgen_u_id']}'");
+      $r = mysqli_query($ml,"SELECT * FROM users WHERE u_id='{$_SESSION['mgen_u_id']}'");
       echo mysqli_error($ml);
       if (mysqli_num_rows($r) == 1) {
         $w = mysqli_fetch_assoc($r);
@@ -78,7 +115,7 @@ function login () {
   }
   else {
     if(isset($_COOKIE['mgen_login']) && isset($_COOKIE['mgen_pass'])) {
-      $r = mysqli_query($ml,"SELECT * FROM user WHERE u_login='{$_COOKIE['mgen_login']}'");
+      $r = mysqli_query($ml,"SELECT * FROM users WHERE u_login='{$_COOKIE['mgen_login']}'");
       echo mysqli_error($ml);
       $w = mysqli_fetch_assoc($r);
       if(mysqli_num_rows($r) == 1 && md5($w['u_login'].$w['u_pass']) == $_COOKIE['mgen_pass']) {
@@ -102,17 +139,8 @@ function login () {
 
 function load_user() {
   GLOBAL $ml, $uid, $ua;
-  $r = mysqli_query($ml,"SELECT * FROM user WHERE u_id='$uid'");
+  $r = mysqli_query($ml,"SELECT * FROM users WHERE u_id='$uid'");
   echo mysqli_error($ml);
   $ua = mysqli_fetch_assoc($r);
-}
-
-function show_reg_form() {
-  echo "<form method=post action=reg.php>";
-  echo "Name: <input id=name type=text name=name /><br />";
-  echo "Email: <input id=login type=text name=login /><br />";
-  echo "Password: <input id=password type=password name=password /><br />";
-  echo "<input type=submit name=register value='Sign up for CTracker'>";
-  echo "</form>";
 }
 ?>

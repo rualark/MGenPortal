@@ -34,14 +34,42 @@ body {
   color: white;
 }
 .navbar-brand {
-  color: white;
+  color: #b02000;
 }
 .navbar-brand:hover {
-  color: #bbbbbb;
+  color: #901000;
 }
 .nav-link {
   color: white;
 }
 .nav-link:hover {
   color: #bbbbbb;
+}
+.dropdown-menu a:hover
+{
+  color: #fff;
+  background-color: #800000;
+  border-color: #fff;
+}
+.icon-bar
+{
+  background:green !important; /*Whatever colour you want for icon lines*/
+}
+.navbar-toggle
+{
+  background:yellow !important; /*Whatever colour you want for background */
+}
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+  border-color: darkblue; /* Whatever Colour you want */
+}
+button.navbar-toggle{
+  background:none;
+  border:none;
+  color:#000;
+// and so on according to what style u want...
+}
+
+button.navbar-toggle span{
+  background:#000;/*change accordingly*/
+// these span are for white line you can edit the lines in this css
 }
