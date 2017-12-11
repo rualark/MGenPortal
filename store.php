@@ -3,11 +3,18 @@ require_once "lib/mlib.php";
 require_once "lib/config.php";
 require_once "lib/auth.php";
 
+// Load POST
 $action = secure_variable_post("action");
 $f_id = secure_variable_post("f_id");
 $f_type = secure_variable_post("f_type");
 $f_private = secure_variable_post("f_private");
 $f_instruments = secure_variable_post("f_instruments");
+
+// Load GET
+if (!$action) {
+  $action = secure_variable("action");
+  $f_id = secure_variable("f_id");
+}
 
 login();
 
@@ -50,6 +57,7 @@ if ($action == "f_instruments" && $uid && $f_id) {
   }
   // Update field
   mysqli_query($ml,"UPDATE files SET f_instruments='$f_instruments' WHERE f_id='$f_id'");
+  echo mysqli_error($ml);
   load_file();
   load_active_jobs();
   // Recreate job if it is not draft already
@@ -63,6 +71,18 @@ if ($action == "f_instruments" && $uid && $f_id) {
   if (isset($wj[2])) {
     inject_config(2, "Instruments", $f_instruments);
   }
+  die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
+}
+
+// Start jobs
+if ($action == "start" && $uid && $f_id) {
+  load_file();
+  // Check authority
+  if ($wf['u_id'] != $uid) {
+    die ("<script language=javascript>location.replace('index.php');</script>");
+  }
+  // Update field
+  mysqli_query($ml,"UPDATE jobs SET j_state=1 WHERE f_id='$f_id' AND j_deleted=0 AND j_state=0");
   echo mysqli_error($ml);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
