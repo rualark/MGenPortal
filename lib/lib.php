@@ -42,4 +42,9 @@ function stop_time($st="", $show=1) {
   start_time();
 }
 
+// Get base filename
+function bfname($st) {
+  return substr($st, 0, strrpos($st, "."));
+}
+
 ?>

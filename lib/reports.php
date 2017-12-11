@@ -1,19 +1,38 @@
 <?php
 
-function show_job($w, $c) {
+function show_job($w, $c, $t=0) {
   GLOBAL $bheight;
   if (!$w['j_id']) return "-";
-  if ($w['j_state'] == 0)
-    return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
-  if ($w['j_state'] == 1)
-    return "<a title='Job is waiting in queue for vacant server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
-  if ($w['j_state'] == 2)
-    return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
-  if ($w['j_state'] == 3 && $w['j_result'])
-    return "<a title='Job completed with errors. Click to see' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
-  if ($c == 2)
-    return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
-  else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
+  if ($t == 0) {
+    if ($w['j_state'] == 0)
+      return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
+    if ($w['j_state'] == 1)
+      return "<a title='Job is waiting in queue for vacant server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+    if ($w['j_state'] == 2)
+      return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+    if ($w['j_state'] == 3 && $w['j_result'])
+      return "<a title='Job completed with errors. Click to see' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
+    if ($c == 2)
+      return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
+    else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
+  }
+  if ($t == 1) {
+    if ($w['j_state'] == 0)
+      return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
+    if ($w['j_state'] == 1)
+      return "<a title='Job is waiting in queue for vacant server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+    if ($w['j_state'] == 2)
+      return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+    if ($w['j_state'] == 3 && $w['j_result'])
+      return "<a title='Job completed with errors. Click to see' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
+    return "<a title='Job completed OK' href='job.php?j_id=$w[j_id]'><img height=$bheight src='img/ok.png'>";
+  }
+  if ($t == 2) {
+    if ($w['j_state'] < 3 || $w['j_result']) return "-";
+    if ($c == 2)
+      return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
+    else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
+  }
 }
 
 function show_uploads() {
@@ -111,7 +130,7 @@ function show_upload() {
     echo "<input type=hidden name=action value=f_instruments>";
     echo "<div class='form-group row'>";
     echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
-    echo "<div class=col-sm-10>";
+    echo "<div class=col-sm-8>";
 
     echo "<input class='form-control' id=f_instruments type=text size=80 value='$wf[f_instruments]' name=f_instruments list='instlist'>";
     echo "<datalist id=instlist>";
@@ -123,8 +142,11 @@ function show_upload() {
       echo "<option value='$w[il_text]'></option>";
     }
     echo "</datalist>";
-    //echo "<button type=submit name=submit class=\"btn btn-primary\">Submit</button>";
-    echo "</div></div>";
+    echo "</div>";
+    echo "<div class='col-sm-2 text-right'>";
+    echo "<button type=submit name=submit class=\"btn btn-primary\">Save</button>";
+    echo "</div>";
+    echo "</div>";
     echo "</form>";
   } else {
     echo "<form action=store.php method=post>";
@@ -161,11 +183,12 @@ function show_upload() {
 }
 
 function show_jobs($f_id) {
-  GLOBAL $ml, $ftypes;
+  GLOBAL $ml, $ftypes2, $jclasses;
   echo "<table class='table'>"; // table-striped table-hover
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>State</th>";
+  echo "<th scope=col style='text-align: center;'>Result</th>";
   echo "<th scope=col style='text-align: center;'>Job created</th>";
   echo "<th scope=col style='text-align: center;'>Job started</th>";
   echo "<th scope=col style='text-align: center;'>Duration (s)</th>";
@@ -190,7 +213,9 @@ function show_jobs($f_id) {
     $class = "";
     if ($w['j_deleted']) $class = "class=table-secondary";
     echo "<td $class align=center>";
-    echo show_job($w, $w['j_class']);
+    echo show_job($w, $w['j_class'], 1);
+    echo "<td $class align=center>";
+    echo show_job($w, $w['j_class'], 2);
     echo "<td $class align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
     echo "<td $class align='center'>";
     if ($w['j_started'] + 0) echo "$w[j_started]</td>";
@@ -198,8 +223,8 @@ function show_jobs($f_id) {
     echo "<td $class align='center'>";
     if ($w['j_duration']) echo "$w[j_duration]";
     else echo "-";
-    echo "<td $class align='center'>$w[j_type]</td>";
-    echo "<td $class align='center'>$w[j_class]</td>";
+    echo "<td $class align='center'>".$ftypes2[$w['j_type']]."</td>";
+    echo "<td $class align='center'>".$jclasses[$w['j_class']]."</td>";
     echo "</tr>\n";
   }
   echo "</tbody>";

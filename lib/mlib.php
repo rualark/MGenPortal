@@ -17,6 +17,13 @@ $ftypes2 = array(
   'MP1' => "Other"
 );
 
+$jclasses = array(
+  0 => "Analyse",
+  1 => "Correct",
+  2 => "Perform",
+  3 => "Generate"
+);
+
 $vtypes = array(
   0 => "Public",
   1 => "Group",
@@ -24,10 +31,6 @@ $vtypes = array(
 );
 
 $default_ilist = "Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano";
-
-function bfname($st) {
-  return substr($st, 0, strrpos($st, "."));
-}
 
 function furl($w) {
   return $w['f_folder'] . $w['f_name'];
@@ -98,7 +101,7 @@ function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_engrave, $j_r
   echo mysqli_error($ml);
   // Set job folder
   $j_id = mysqli_insert_id($ml);
-  $j_folder = "jobs/" . date("Y/m-d/$uid-$j_id/");
+  $j_folder = "jobs/" . date("Y/m-d") . "/$uid-$j_id/";
   mysqli_query($ml, "UPDATE jobs SET j_folder='$j_folder' WHERE j_id='$j_id'");
   echo mysqli_error($ml);
   mkdir("share/" . substr($j_folder, 0, strlen($j_folder) - 1), 0777, true);
