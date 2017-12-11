@@ -12,6 +12,9 @@
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
+  <!-- Bootstrap combobox -->
+  <link href="bootstrap-combobox/css/bootstrap-combobox.css" rel="stylesheet">
+
   <!-- Custom styles for this template -->
   <link href="css/mgen.css" rel="stylesheet">
 </head>
@@ -30,12 +33,12 @@
         <?php
         if ($uid) {
           ?>
-          <li class=nav-item><a class=nav-link href="new.php"><b>Upload</b></a></li>
+          <li class=nav-item><a class=nav-link href="upload.php"><b>Upload</b></a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="uploads.php">Files</a>
+              <a class="dropdown-item" href="files.php">Files</a>
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
@@ -59,7 +62,7 @@
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="uploads.php">Files</a>
+              <a class="dropdown-item" href="files.php">Files</a>
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>

@@ -78,8 +78,8 @@ function logout () {
   unset($_SESSION['mgen_u_id']);
   SetCookie("mgen_login", "", -1, '/');
   SetCookie("mgen_pass", "", -1, '/');
-  echo "Current cookies: ".$_COOKIE['mgen_login']." ".$_COOKIE['mgen_pass'];
-  echo "You are logged out";
+  //echo "Current cookies: ".$_COOKIE['mgen_login']." ".$_COOKIE['mgen_pass'];
+  //echo "You are logged out";
   die ("<script language=javascript>location.replace('index.php');</script>");
 }
 
