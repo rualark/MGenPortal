@@ -3,7 +3,7 @@ require_once "lib/lib.php";
 require_once "lib/config.php";
 require_once "lib/auth.php";
 
-$title = "Composer Tracker";
+$title = "$site_name";
 
 if (login()) {
   //echo "Your session is logged in, $ua[u_name]<br>";

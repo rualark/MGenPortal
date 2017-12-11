@@ -8,7 +8,7 @@ $password = secure_variable_post("password");
 $log_in = secure_variable_post("log_in");
 $action = secure_variable("action");
 
-$title = "Login to Composer Tracker";
+$title = "Login to $site_name";
 
 if($action == "out") {
   logout();
