@@ -7,7 +7,7 @@ $name = secure_variable_post("name");
 $login = secure_variable_post("login");
 $password = secure_variable_post("password");
 
-$title = "Join Composer Tracker";
+$title = "Join $site_name";
 
 if (login()) {
   die ("<script language=javascript>location.replace('index.php');</script>");

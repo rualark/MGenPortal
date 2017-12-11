@@ -1,4 +1,6 @@
-<?
+<?php
+$site_name = "Composer Tracker";
+
 function secure_variable($st) {
   GLOBAL $ml;
   if (isset($_GET[$st])) return mysqli_real_escape_string($ml, $_GET[$st]);

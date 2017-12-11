@@ -20,7 +20,7 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="index.php"><b>Composer Tracker</b></a>
+    <a class="navbar-brand" href="index.php"><b><?=$site_name;?></b></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -35,7 +35,7 @@
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="uploads.php">Uploads</a>
+              <a class="dropdown-item" href="uploads.php">Files</a>
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
@@ -59,7 +59,7 @@
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="uploads.php">Uploads</a>
+              <a class="dropdown-item" href="uploads.php">Files</a>
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
