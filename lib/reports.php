@@ -104,6 +104,7 @@ function show_upload() {
     }
     echo "</select>";
     echo "</div></div>";
+    echo "</form>";
 
     echo "<form action=store.php method=post>";
     echo "<input type=hidden name=f_id value='$f_id'>";
@@ -112,29 +113,30 @@ function show_upload() {
     echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
     echo "<div class=col-sm-10>";
 
-    echo "<select class='form-control combobox'>";
+    echo "<input class='form-control' id=f_instruments type=text size=80 value='$wf[f_instruments]' name=f_instruments list='instlist'>";
+    echo "<datalist id=instlist>";
     $r = mysqli_query($ml, "SELECT * FROM i_lists");
     echo mysqli_error($ml);
     $n = mysqli_num_rows($r);
-    echo "<option></option>";
     for ($i=0; $i<$n; ++$i) {
       $w = mysqli_fetch_assoc($r);
-      echo "<option value='$w[il_text]'>$w[il_text]</option>";
+      echo "<option value='$w[il_text]'></option>";
     }
-    echo "</select>";
+    echo "</datalist>";
+    //echo "<button type=submit name=submit class=\"btn btn-primary\">Submit</button>";
     echo "</div></div>";
     echo "</form>";
   } else {
     echo "<form action=store.php method=post>";
     echo "<div class='form-group row'>";
     echo "<label class='col-sm-2 col-form-label'>Type:</label>";
-    echo "<div class=col-sm-6>";
+    echo "<div class=col-sm-10>";
     echo "<input class='form-control' name=f_type value='" . get_typename($wf['f_type']) . "' readonly>";
     echo "</div></div>";
 
     echo "<div class='form-group row'>";
     echo "<label class='col-sm-2 col-form-label'>Visibility:</label>";
-    echo "<div class=col-sm-6>";
+    echo "<div class=col-sm-10>";
     echo "<input class='form-control' name=f_private value='";
     if ($wf['f_private']) echo "private";
     else echo "public";
@@ -143,7 +145,7 @@ function show_upload() {
 
     echo "<div class='form-group row'>";
     echo "<label class='col-sm-2 col-form-label'>Instruments:</label>";
-    echo "<div class=col-sm-6>";
+    echo "<div class=col-sm-10>";
     echo "<input class='form-control' name=f_instruments value='$wf[f_instruments]' readonly>";
     echo "</div></div>";
     echo "</form>";
@@ -152,7 +154,7 @@ function show_upload() {
   echo "<form action=store.php method=post>";
   echo "<div class='form-group row'>";
   echo "<label class='col-sm-2 col-form-label'>Upload time:</label>";
-  echo "<div class=col-sm-6>";
+  echo "<div class=col-sm-10>";
   echo "<input class='form-control' name=f_time value='$wf[f_time]' readonly>";
   echo "</div></div>";
   echo "</form>";

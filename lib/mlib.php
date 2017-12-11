@@ -3,6 +3,7 @@ require_once "lib.php";
 
 $bheight = 24;
 $wf = 0;
+$wj = 0;
 
 $ftypes = array(
   'CA1' => "Cantus firmus",
@@ -21,6 +22,8 @@ $vtypes = array(
   1 => "Group",
   2 => "Private"
 );
+
+$default_ilist = "Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano";
 
 function bfname($st) {
   return substr($st, 0, strrpos($st, "."));
@@ -63,6 +66,21 @@ function load_job() {
   $wj = mysqli_fetch_assoc($r);
 }
 
+function load_active_jobs() {
+  GLOBAL $f_id, $ml, $wj;
+  $wj = array();
+  $r = mysqli_query($ml, "SELECT * FROM jobs
+    LEFT JOIN files USING (f_id) 
+    LEFT JOIN users USING (u_id)
+    WHERE jobs.f_id='$f_id' AND j_deleted=0");
+  echo mysqli_error($ml);
+  $n = mysqli_num_rows($r);
+  for ($i=0; $i<$n; ++$i) {
+    $w = mysqli_fetch_assoc($r);
+    $wj[$w['j_class']] = $w;
+  }
+}
+
 function get_typename($t) {
   if ($t == 'CA2') return 'Counterpoint';
   if ($t == 'CA1') return 'Cantus';
@@ -103,6 +121,22 @@ function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_engrave, $j_r
   }
 }
 
+function inject_config($j_class, $tag, $value) {
+  GLOBAL $wj;
+  $fname_pl =  "share/".$wj[$j_class]['j_folder'].bfname($wj[$j_class]['f_name']).".pl";
+  // Read config
+  $fa = file($fname_pl);
+  // Write config without tag
+  $fh = fopen($fname_pl, 'w');
+  for ($i=0; $i<count($fa); ++$i) {
+    if (stripos($fa[$i], "$tag ") === 0 || stripos($fa[$i], "$tag=") === 0) continue;
+    fwrite($fh, $fa[$i]);
+  }
+  // Write tag
+  fwrite($fh, "$tag = $value\n");
+  fclose($fh);
+}
+
 function copy_job($j_type, $j_class) {
   GLOBAL $f_id, $ml, $wf;
   $r = mysqli_query($ml, "SELECT * FROM jobs 
@@ -118,7 +152,6 @@ function copy_job($j_type, $j_class) {
 }
 
 function create_jobs_mp() {
-  GLOBAL $wf;
   create_job("MP1", 2, 300, 340, 0, 600);
 }
 
@@ -145,15 +178,22 @@ function copy_jobs_mp() {
   copy_job($wf['f_type'], 2);
 }
 
-function delete_jobs_mp() {
+function deactivate_jobs_mp() {
   GLOBAL $f_id, $ml;
   mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id' AND j_class=2");
   echo mysqli_error($ml);
 }
 
-function delete_jobs_ca() {
+function deactivate_jobs_ca() {
   GLOBAL $f_id, $ml;
   mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id' AND j_class<2");
+  echo mysqli_error($ml);
+}
+
+function delete_old_drafts() {
+  GLOBAL $f_id, $ml;
+  // Delete deactivated drafts
+  mysqli_query($ml, "DELETE FROM jobs WHERE f_id='$f_id' AND j_state=0 AND j_deleted=1");
   echo mysqli_error($ml);
 }
 
