@@ -17,13 +17,14 @@ function show_job($w, $c) {
 }
 
 function show_uploads() {
-  GLOBAL $ml, $uid;
+  GLOBAL $ml, $uid, $ftypes2;
   echo "<table class='table table-hover'>"; // table-striped
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>Uploaded</th>";
   echo "<th scope=col style='text-align: center;'>User</th>";
   echo "<th scope=col style='text-align: center;'>File</th>";
+  echo "<th scope=col style='text-align: center;'>Type</th>";
   echo "<th scope=col style='text-align: center;'>Analysis</th>";
   echo "<th scope=col style='text-align: center;'>Correction</th>";
   echo "<th scope=col style='text-align: center;'>MP3</th>";
@@ -42,9 +43,10 @@ function show_uploads() {
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<tr>";
-    echo "<td align='center'><a href='upload.php?f_id=$w[f_id]'>$w[f_time]</td>";
+    echo "<td align='center'><a href='file.php?f_id=$w[f_id]'>$w[f_time]</td>";
     echo "<td align='center'>$w[u_name]</td>";
     echo "<td align='center'><a target=_blank href='share/" . furl($w) . "'>$w[f_name]</td>";
+    echo "<td align='center'>".$ftypes2[$w['f_type']]."</td>";
     $r2 = mysqli_query($ml, "SELECT * FROM jobs WHERE f_id='$w[f_id]' ORDER BY j_added");
     echo mysqli_error($ml);
     $n2 = mysqli_num_rows($r2);
@@ -67,7 +69,7 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $uid, $f_id, $wf, $ftypes;
+  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes;
   echo "<div class=container>";
   echo "<br><h2 align=center>$wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
@@ -75,28 +77,90 @@ function show_upload() {
     echo "<form action=store.php method=post>";
     echo "<input type=hidden name=f_id value='$f_id'>";
     echo "<input type=hidden name=action value=f_type>";
-    echo "<b>Type:</b> ";
-    echo "<select class=\"custom-select\" name=f_type onChange='this.form.submit();'>";
+    echo "<div class='form-group row'>";
+    echo "<label for=f_type class='col-sm-2 col-form-label'>Type:</label>";
+    echo "<div class=col-sm-10>";
+    echo "<select class=\"custom-select\" id=f_type name=f_type onChange='this.form.submit();'>";
     foreach ($ftypes as $key => $val) {
       echo "<option value=$key";
       if ($key == $wf['f_type']) echo " selected";
       echo ">$val</option>";
     }
     echo "</select>";
+    echo "</div></div>";
+    echo "</form>";
+
+    echo "<form action=store.php method=post>";
+    echo "<input type=hidden name=f_id value='$f_id'>";
+    echo "<input type=hidden name=action value=f_private>";
+    echo "<div class='form-group row'>";
+    echo "<label for=f_private class='col-sm-2 col-form-label'>Visibility:</label>";
+    echo "<div class=col-sm-10>";
+    echo "<select class=\"custom-select\" id=f_private name=f_private onChange='this.form.submit();'>";
+    foreach ($vtypes as $key => $val) {
+      echo "<option value=$key";
+      if ($key == $wf['f_private']) echo " selected";
+      echo ">$val</option>";
+    }
+    echo "</select>";
+    echo "</div></div>";
+
+    echo "<form action=store.php method=post>";
+    echo "<input type=hidden name=f_id value='$f_id'>";
+    echo "<input type=hidden name=action value=f_instruments>";
+    echo "<div class='form-group row'>";
+    echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
+    echo "<div class=col-sm-10>";
+
+    echo "<select class='form-control combobox'>";
+    $r = mysqli_query($ml, "SELECT * FROM i_lists");
+    echo mysqli_error($ml);
+    $n = mysqli_num_rows($r);
+    echo "<option></option>";
+    for ($i=0; $i<$n; ++$i) {
+      $w = mysqli_fetch_assoc($r);
+      echo "<option value='$w[il_text]'>$w[il_text]</option>";
+    }
+    echo "</select>";
+    echo "</div></div>";
     echo "</form>";
   } else {
-    echo "<p><b>Type:</b> " . get_typename($wf['f_type']) . "</p>";
+    echo "<form action=store.php method=post>";
+    echo "<div class='form-group row'>";
+    echo "<label class='col-sm-2 col-form-label'>Type:</label>";
+    echo "<div class=col-sm-6>";
+    echo "<input class='form-control' name=f_type value='" . get_typename($wf['f_type']) . "' readonly>";
+    echo "</div></div>";
+
+    echo "<div class='form-group row'>";
+    echo "<label class='col-sm-2 col-form-label'>Visibility:</label>";
+    echo "<div class=col-sm-6>";
+    echo "<input class='form-control' name=f_private value='";
+    if ($wf['f_private']) echo "private";
+    else echo "public";
+    echo "' readonly>";
+    echo "</div></div>";
+
+    echo "<div class='form-group row'>";
+    echo "<label class='col-sm-2 col-form-label'>Instruments:</label>";
+    echo "<div class=col-sm-6>";
+    echo "<input class='form-control' name=f_instruments value='$wf[f_instruments]' readonly>";
+    echo "</div></div>";
+    echo "</form>";
   }
-  echo "<p><b>Visibility:</b> ";
-  if ($wf['f_private']) echo "private";
-  else echo "public";
   echo "</p>";
-  echo "<p><b>Upload time:</b> $wf[f_time]</p>";
+  echo "<form action=store.php method=post>";
+  echo "<div class='form-group row'>";
+  echo "<label class='col-sm-2 col-form-label'>Upload time:</label>";
+  echo "<div class=col-sm-6>";
+  echo "<input class='form-control' name=f_time value='$wf[f_time]' readonly>";
+  echo "</div></div>";
+  echo "</form>";
 }
 
 function show_jobs($f_id) {
   GLOBAL $ml, $ftypes;
-  echo "<table class='table table-hover'>"; // table-striped
+  echo "<table class='table'>"; // table-striped table-hover
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>State</th>";
@@ -114,24 +178,26 @@ function show_jobs($f_id) {
     LEFT JOIN files USING (f_id) 
     LEFT JOIN users USING (u_id)
     WHERE 1=1 $cond 
-    ORDER BY j_added DESC, j_class
+    ORDER BY j_deleted, j_added DESC, j_class
     LIMIT 100");
   echo mysqli_error($ml);
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<tr>";
-    echo "<td align=center>";
+    $class = "";
+    if ($w['j_deleted']) $class = "class=table-secondary";
+    echo "<td $class align=center>";
     echo show_job($w, $w['j_class']);
-    echo "<td align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
-    echo "<td align='center'>";
+    echo "<td $class align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
+    echo "<td $class align='center'>";
     if ($w['j_started'] + 0) echo "$w[j_started]</td>";
     else echo "-";
-    echo "<td align='center'>";
+    echo "<td $class align='center'>";
     if ($w['j_duration']) echo "$w[j_duration]";
     else echo "-";
-    echo "<td align='center'>$w[j_type]</td>";
-    echo "<td align='center'>$w[j_class]</td>";
+    echo "<td $class align='center'>$w[j_type]</td>";
+    echo "<td $class align='center'>$w[j_class]</td>";
     echo "</tr>\n";
   }
   echo "</tbody>";

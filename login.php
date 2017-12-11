@@ -16,13 +16,13 @@ if($action == "out") {
 }
 
 if (login()) {
-  echo "Your session is logged in<br>";
+  //echo "Your session is logged in<br>";
   die ("<script language=javascript>location.replace('index.php');</script>");
 }
 else {
   if(isset($_POST['log_in'])) {
     if (enter()) {
-      echo "You logged in successfully<br>";
+      //echo "You logged in successfully<br>";
       die ("<script language=javascript>location.replace('index.php');</script>");
     }
   }
