@@ -26,10 +26,10 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-      <ul class="navbar-nav mr-auto">
-        <?php
-        if ($uid) {
-          ?>
+      <?php
+      if ($uid) {
+      ?>
+        <ul class="navbar-nav mr-auto">
           <li class=nav-item><a class=nav-link href="upload.php"><b>Upload</b></a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -41,6 +41,8 @@
           </li>
           <li class=nav-item><a class=nav-link href="status.php">Status</a></li>
           <li class=nav-item><a class=nav-link href="explore.php">Explore</a></li>
+        </ul>
+        <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <?=$ua['u_name'] ?></a>
@@ -49,12 +51,12 @@
               <a class="dropdown-item" href="login.php?action=out">Sign out</a>
             </div>
           </li>
-          <?php
-        }
-        else {
-          ?>
-          <li class=nav-item><a class=nav-link href="login.php"><b>Login</b></a></li>
-          <li class=nav-item><a class=nav-link href="reg.php"><b>Sign up</b></a></li>
+        </ul>
+        <?php
+      }
+      else {
+        ?>
+        <ul class="navbar-nav mr-auto">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
@@ -63,14 +65,20 @@
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
-          <?php
-        }
-        ?>
-      </ul>
+        </ul>
+        <ul class="navbar-nav">
+          <li class=nav-item><a class=nav-link href="login.php"><b>Login</b></a></li>
+          <li class=nav-item><a class=nav-link href="reg.php"><b>Sign up</b></a></li>
+        </ul>
+        <?php
+      }
+      ?>
+      <!--
       <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-brown my-2 my-sm-0" type="submit">Search</button>
       </form>
+      -->
     </div>
   </div>
 </nav>
