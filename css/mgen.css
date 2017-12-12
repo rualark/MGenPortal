@@ -2,7 +2,7 @@
 body {
   padding-top: 3.5rem;
 }
-.jumbotron {
+.jumbotron1 {
   background-image: url("../img/bg.jpg");
   background-color: #000000;
   margin-bottom: 0;
@@ -12,6 +12,11 @@ body {
   -webkit-background-size: cover;
   background-size: cover;
 }
+.jumbotron2 {
+  background-color: white;
+  margin-bottom: 0;
+  min-height: 50%;
+}
 .dropdown-menu a:hover {
   color: #fff;
   background-color: #a0a8af;
@@ -19,23 +24,4 @@ body {
 }
 .container {
   max-width: 1050px;
-}
-.btn-file {
-  position: relative;
-  overflow: hidden;
-}
-.btn-file input[type=file] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  font-size: 100px;
-  text-align: right;
-  filter: alpha(opacity=0);
-  opacity: 0;
-  outline: none;
-  background: white;
-  cursor: inherit;
-  display: block;
 }
