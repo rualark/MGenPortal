@@ -2,6 +2,7 @@
 require_once "lib.php";
 
 $bheight = 24;
+$bheight2 = 36;
 $wf = 0;
 $wj = 0;
 

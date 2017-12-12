@@ -231,4 +231,49 @@ function show_jobs($f_id) {
   echo "</table>";
 }
 
+function show_status() {
+  GLOBAL $ml, $bheight2;
+  echo "<div class=container>";
+  // Show servers
+  echo "<br><h2>Processing servers:</h2><br>"; //  align=center
+  echo "<div class=row>";
+  $r = mysqli_query($ml, "SELECT *, 
+    TIMESTAMPDIFF(SECOND, last_update, NOW()) as pass 
+    FROM s_status
+    ORDER BY last_update DESC");
+  echo mysqli_error($ml);
+  $n = mysqli_num_rows($r);
+  for ($i=0; $i<$n; ++$i) {
+    $w = mysqli_fetch_assoc($r);
+    echo "<div class=col-sm-4>";
+    echo "<a href='share/screen$w[s_id].png' target=_blank><img title='#$w[s_id]: $w[s_host]";
+    if ($w['pass'] < 5) echo "\n".human_pass($w[os_age])." since OS restart";
+    echo "' class='img-fluid img-thumbnail' src='share/screen$w[s_id].png'></a>";
+    echo "<br>";
+    if ($w['pass'] < 5) {
+      echo "<p title='Last update $w[pass] seconds ago' class=text-success><b>Online for ".human_pass($w['server_age'])."</b></p>";
+      if ($w['reaper_age'] > 0) echo "<img title='Reaper online for ".human_pass($w['reaper_age'])."' src='img/reaper.png' height=$bheight2> ";
+      else echo "<img title='Reaper offline' src='img/reaper_gray.png' height=$bheight2> ";
+      if ($w['ahk_age'] > 0) echo "<img title='AutoHotkey online for ".human_pass($w['ahk_age'])."' src='img/ahk.png' height=$bheight2> ";
+      else echo "<img title='AutoHotkey offline' src='img/ahk_gray.png' height=$bheight2> ";
+      if ($w['mgen_age'] > 0) echo "<img title='MGen online for ".human_pass($w['mgen_age'])."' src='img/mgen.png' height=$bheight2> ";
+      else echo "<img title='MGen offline' src='img/mgen_gray.png' height=$bheight2> ";
+      if ($w['ly_age'] > 0) echo "<img title='Lilypond online for ".human_pass($w['ly_age'])."' src='img/ly.png' height=$bheight2> ";
+      else echo "<img title='Lilypond offline' src='img/ly_gray.png' height=$bheight2> ";
+    }
+    else echo "<p title='Was online $w[last_update]' class=text-danger><b>Offline for ".human_pass($w['pass'])."</b></p>";
+    echo "</div>";
+  }
+  echo "</div>";
+  $r = mysqli_query($ml, "SELECT COUNT(*) as cnt FROM jobs WHERE j_state=1 AND j_deleted=0");
+  echo mysqli_error($ml);
+  $w = mysqli_fetch_assoc($r);
+  echo "<br><hr>";
+  echo "<p class='lead'><img src='img/pause.png' height='$bheight2'> Jobs waiting in queue: $w[cnt]</p>"; //  align=center
+
+  $r = mysqli_query($ml, "SELECT COUNT(*) as cnt FROM jobs WHERE j_state=2 AND j_deleted=0");
+  echo mysqli_error($ml);
+  $w = mysqli_fetch_assoc($r);
+  echo "<p class='lead'><img src='img/play.png' height='$bheight2'> Jobs running: $w[cnt]</p>"; //  align=center
+}
 ?>

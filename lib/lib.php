@@ -47,4 +47,13 @@ function bfname($st) {
   return substr($st, 0, strrpos($st, "."));
 }
 
+function human_pass($s) {
+  if ($s < 60) return "$s seconds";
+  else if ($s < 3600) return round($s/60) . " minutes";
+  else if ($s < 3600*24) return round($s/3600) . " hours";
+  else if ($s < 3600*24*30) return round($s/3600/24) . " days";
+  else if ($s < 3600*24*365) return round($s/3600/24/30) . " months";
+  else return round($s/3600/24/365) . " years";
+}
+
 ?>
