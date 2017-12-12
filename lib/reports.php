@@ -188,12 +188,12 @@ function show_jobs($f_id) {
   echo "<thead>";
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>State</th>";
+  echo "<th scope=col style='text-align: center;'>Type</th>";
+  echo "<th scope=col style='text-align: center;'>Class</th>";
   echo "<th scope=col style='text-align: center;'>Result</th>";
   echo "<th scope=col style='text-align: center;'>Job created</th>";
   echo "<th scope=col style='text-align: center;'>Job started</th>";
   echo "<th scope=col style='text-align: center;'>Duration (s)</th>";
-  echo "<th scope=col style='text-align: center;'>Type</th>";
-  echo "<th scope=col style='text-align: center;'>Class</th>";
   echo "</tr>\n";
   echo "</thead>";
   echo "<tbody>";
@@ -214,6 +214,8 @@ function show_jobs($f_id) {
     if ($w['j_deleted']) $class = "class=table-secondary";
     echo "<td $class align=center>";
     echo show_job($w, $w['j_class'], 1);
+    echo "<td $class align='center'>".$ftypes2[$w['j_type']]."</td>";
+    echo "<td $class align='center'>".$jclasses[$w['j_class']]."</td>";
     echo "<td $class align=center>";
     echo show_job($w, $w['j_class'], 2);
     echo "<td $class align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
@@ -223,8 +225,6 @@ function show_jobs($f_id) {
     echo "<td $class align='center'>";
     if ($w['j_duration']) echo "$w[j_duration]";
     else echo "-";
-    echo "<td $class align='center'>".$ftypes2[$w['j_type']]."</td>";
-    echo "<td $class align='center'>".$jclasses[$w['j_class']]."</td>";
     echo "</tr>\n";
   }
   echo "</tbody>";
