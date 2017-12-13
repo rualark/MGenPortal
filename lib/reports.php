@@ -1,6 +1,6 @@
 <?php
 
-function show_job($w, $c, $t=0) {
+function show_job_icon($w, $c, $t=0) {
   GLOBAL $bheight;
   if (!$w['j_id']) return "-";
   if ($t == 0) {
@@ -11,7 +11,7 @@ function show_job($w, $c, $t=0) {
     if ($w['j_state'] == 2)
       return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
-      return "<a title='Job completed with errors. Click to see' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     if ($c == 2)
       return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
     else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
@@ -24,7 +24,7 @@ function show_job($w, $c, $t=0) {
     if ($w['j_state'] == 2)
       return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
-      return "<a title='Job completed with errors. Click to see' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     return "<a title='Job completed OK' href='job.php?j_id=$w[j_id]'><img height=$bheight src='img/ok.png'>";
   }
   if ($t == 2) {
@@ -76,11 +76,11 @@ function show_uploads() {
       $wa[$w2['j_class']]['f_name'] = $w['f_name'];
     }
     echo "<td align=center>";
-    echo show_job($wa[0], 0);
+    echo show_job_icon($wa[0], 0);
     echo "<td align=center>";
-    echo show_job($wa[1], 1);
+    echo show_job_icon($wa[1], 1);
     echo "<td align=center>";
-    echo show_job($wa[2], 2);
+    echo show_job_icon($wa[2], 2);
     echo "</tr>\n";
   }
   echo "</tbody>";
@@ -213,11 +213,11 @@ function show_jobs($f_id) {
     $class = "";
     if ($w['j_deleted']) $class = "class=table-secondary";
     echo "<td $class align=center>";
-    echo show_job($w, $w['j_class'], 1);
+    echo show_job_icon($w, $w['j_class'], 1);
     echo "<td $class align='center'>".$ftypes2[$w['j_type']]."</td>";
     echo "<td $class align='center'>".$jclasses[$w['j_class']]."</td>";
     echo "<td $class align=center>";
-    echo show_job($w, $w['j_class'], 2);
+    echo show_job_icon($w, $w['j_class'], 2);
     echo "<td $class align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
     echo "<td $class align='center'>";
     if ($w['j_started'] + 0) echo "$w[j_started]</td>";
@@ -275,5 +275,29 @@ function show_status() {
   echo mysqli_error($ml);
   $w = mysqli_fetch_assoc($r);
   echo "<p class='lead'><img src='img/play.png' height='$bheight2'> Jobs running: $w[cnt]</p>"; //  align=center
+}
+
+function show_job() {
+  GLOBAL $j_id, $wj;
+  echo "<h2 align=center>Job #$j_id for file <a href='file.php?f_id=$wj[f_id]'>$wj[f_name]</a></h2>";
+}
+
+function show_job_editor() {
+  GLOBAL $jconfig, $j_id, $cm_theme;
+  echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/lib/codemirror.css'>";
+  echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/theme/$cm_theme.css'>";
+  echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/dialog/dialog.css'>";
+  echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/search/matchesonscrollbar.css'>";
+  echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/display/fullscreen.css'>";
+
+  echo "<form id='preview-form' method='post' action='store.php'>";
+  echo "<input type=hidden name=action value=jconfig>";
+  echo "<input type=hidden name=j_id value='$j_id'>";
+  echo "<textarea class='codemirror-textarea' name='jconfig' id='jconfig'>";
+  echo $jconfig;
+  echo "</textarea>";
+  echo "<br>";
+  echo "<input type='submit' name='submit' id='submit' value='Submit'>";
+  echo "</form>";
 }
 ?>

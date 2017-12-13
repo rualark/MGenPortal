@@ -6,9 +6,11 @@ require_once "lib/auth.php";
 // Load POST
 $action = secure_variable_post("action");
 $f_id = secure_variable_post("f_id");
+$j_id = secure_variable_post("j_id");
 $f_type = secure_variable_post("f_type");
 $f_private = secure_variable_post("f_private");
 $f_instruments = secure_variable_post("f_instruments");
+$jconfig = secure_variable_post("jconfig");
 
 // Load GET
 if (!$action) {
@@ -85,6 +87,15 @@ if ($action == "start" && $uid && $f_id) {
   mysqli_query($ml,"UPDATE jobs SET j_state=1 WHERE f_id='$f_id' AND j_deleted=0 AND j_state=0");
   echo mysqli_error($ml);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
+}
+
+if ($action == "jconfig" && $j_id && $uid) {
+  $jconfig = stripslashes(str_replace("\\r\\n", "\r\n", $jconfig));
+  //echo "<pre>";
+  //echo $jconfig;
+  load_job();
+  save_job_config();
+  die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
 }
 
 die ("<script language=javascript>location.replace('index.php');</script>");

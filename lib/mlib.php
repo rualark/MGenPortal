@@ -70,6 +70,16 @@ function load_job() {
   $wj = mysqli_fetch_assoc($r);
 }
 
+function load_job_config() {
+  GLOBAL $wj, $jconfig;
+  $jconfig = file_get_contents("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl");
+}
+
+function save_job_config() {
+  GLOBAL $wj, $jconfig;
+  file_put_contents("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl", $jconfig);
+}
+
 function load_active_jobs() {
   GLOBAL $f_id, $ml, $wj;
   $wj = array();
