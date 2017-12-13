@@ -1,15 +1,29 @@
 <?php
 
+require_once "layout.php";
+
+function get_job_queue_place($wj) {
+  GLOBAL $ml;
+  $r = mysqli_query($ml, "SELECT COUNT(*) as cnt FROM jobs 
+      WHERE (j_state=1 OR j_state=2) AND j_deleted=0 AND 
+      (j_priority < '$wj[j_priority]' OR j_id < '$wj[j_id]')");
+  echo mysqli_error($ml);
+  $w = mysqli_fetch_assoc($r);
+  return $w['cnt'];
+}
+
 function show_job_icon($w, $c, $t=0) {
   GLOBAL $bheight;
   if (!$w['j_id']) return "-";
   if ($t == 0) {
+    if ($w['j_deleted'] && $w['j_state'] < 3)
+      return "<a title='This job was deleted and did not finish' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/delete.png>";
     if ($w['j_state'] == 0)
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
-      return "<a title='Job is waiting in queue for vacant server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+      return "<a title='Will run after ".get_job_queue_place($w)." jobs' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
     if ($w['j_state'] == 2)
-      return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     if ($c == 2)
@@ -17,12 +31,14 @@ function show_job_icon($w, $c, $t=0) {
     else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
   }
   if ($t == 1) {
+    if ($w['j_deleted'] && $w['j_state'] < 3)
+      return "<a title='This job was deleted and did not finish' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/delete.png>";
     if ($w['j_state'] == 0)
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
-      return "<a title='Job is waiting in queue for vacant server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+      return "<a title='Will run after ".get_job_queue_place($w)." jobs' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
     if ($w['j_state'] == 2)
-      return "<a title='Job is running on server' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     return "<a title='Job completed OK' href='job.php?j_id=$w[j_id]'><img height=$bheight src='img/ok.png'>";
@@ -37,7 +53,7 @@ function show_job_icon($w, $c, $t=0) {
 }
 
 function show_uploads() {
-  GLOBAL $ml, $uid, $ftypes2;
+  GLOBAL $ml, $uid, $ftypes2, $wj;
   echo "<table class='table table-hover'>"; // table-striped
   echo "<thead>";
   echo "<tr>";
@@ -72,9 +88,9 @@ function show_uploads() {
     $n2 = mysqli_num_rows($r2);
     $wa = array();
     for ($x=0; $x<$n2; ++$x) {
-      $w2 = mysqli_fetch_assoc($r2);
-      $wa[$w2['j_class']] = $w2;
-      $wa[$w2['j_class']]['f_name'] = $w['f_name'];
+      $wj = mysqli_fetch_assoc($r2);
+      $wa[$wj['j_class']] = $wj;
+      $wa[$wj['j_class']]['f_name'] = $w['f_name'];
     }
     echo "<td align=center>";
     echo show_job_icon($wa[0], 0);
@@ -184,7 +200,7 @@ function show_upload() {
 }
 
 function show_jobs($f_id, $j_id=0) {
-  GLOBAL $ml, $ftypes2, $jclasses;
+  GLOBAL $ml, $ftypes2, $jclasses, $wj;
   echo "<table class='table'>"; // table-striped table-hover
   echo "<thead>";
   echo "<tr>";
@@ -210,22 +226,22 @@ function show_jobs($f_id, $j_id=0) {
   echo mysqli_error($ml);
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
-    $w = mysqli_fetch_assoc($r);
+    $wj = mysqli_fetch_assoc($r);
     echo "<tr>";
     $class = "";
-    if ($w['j_deleted']) $class = "class=table-secondary";
+    if ($wj['j_deleted']) $class = "class=table-secondary";
     echo "<td $class align=center>";
-    echo show_job_icon($w, $w['j_class'], 1);
-    echo "<td $class align='center'>".$ftypes2[$w['j_type']]."</td>";
-    echo "<td $class align='center'>".$jclasses[$w['j_class']]."</td>";
+    echo show_job_icon($wj, $wj['j_class'], 1);
+    echo "<td $class align='center'>".$ftypes2[$wj['j_type']]."</td>";
+    echo "<td $class align='center'>".$jclasses[$wj['j_class']]."</td>";
     echo "<td $class align=center>";
-    echo show_job_icon($w, $w['j_class'], 2);
-    echo "<td $class align='center'><a href='job.php?j_id=$w[j_id]'>$w[j_added]</td>";
+    echo show_job_icon($wj, $wj['j_class'], 2);
+    echo "<td $class align='center'><a href='job.php?j_id=$wj[j_id]'>$wj[j_added]</td>";
     echo "<td $class align='center'>";
-    if ($w['j_started'] + 0) echo "$w[j_started]</td>";
+    if ($wj['j_started'] + 0) echo "$wj[j_started]</td>";
     else echo "-";
     echo "<td $class align='center'>";
-    if ($w['j_duration']) echo "$w[j_duration]";
+    if ($wj['j_duration']) echo "$wj[j_duration]";
     else echo "-";
     echo "</tr>\n";
   }
@@ -286,7 +302,10 @@ function show_job() {
   echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
   echo "<p><b>Processing server:</b> ";
   if ($wj['s_id']) echo "<a href=status.php>#$wj[s_id]</a>";
-  echo "<p><b>Priority:</b> $wj[j_priority]</p>";
+  echo "<p><b>Priority:</b> $wj[j_priority] ";
+  echo "<p><b>Progress:</b> $wj[j_progress]</p>";
+  echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
+  echo "<p><a target=_blank href='share/$wj[j_folder]'>Browse job folder</a></p>";
   show_jobs(0, $j_id);
 }
 
@@ -305,7 +324,11 @@ function show_job_editor() {
   echo $jconfig;
   echo "</textarea>";
   echo "<br>";
-  echo "<input type='submit' name='submit' id='submit' value='Submit'>";
+  echo "<button type=submit value=submit name=submit class='btn btn-primary'>Save config</button> ";
+  echo " <a target='_blank' class=\"btn btn-outline-primary\" href=\"https://github.com/rualark/MGenPortal/wiki/Editing-job-configuration#user-content-job-config-editor-keyboard-shortcuts\" role=\"button\">
+    Keyboard shortcuts</a>";
+  echo " <a target='_blank' class=\"btn btn-outline-primary\" href='share/MGen/configs' role=\"button\">
+    Example and include configs</a>";
   echo "</form>";
 }
 ?>
