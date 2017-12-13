@@ -101,13 +101,13 @@ function get_typename($t) {
   return 'Other';
 }
 
-function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_engrave, $j_render) {
+function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_engrave, $j_render) {
   GLOBAL $ml, $ua, $uid, $f_id, $wf;
   // Create job draft
   mysqli_query($ml, "INSERT INTO jobs 
     (j_added, j_priority, j_type, j_class, f_id, j_timeout, j_timeout2, 
     j_engrave, j_render)
-    VALUES(NOW(), 1, '$j_type', '$j_class', '$f_id', '$j_timeout', '$j_timeout2', 
+    VALUES(NOW(), '$j_priority', '$j_type', '$j_class', '$f_id', '$j_timeout', '$j_timeout2', 
     '$j_engrave', '$j_render')");
   echo mysqli_error($ml);
   // Set job folder
@@ -166,18 +166,18 @@ function copy_job($j_type, $j_class) {
 }
 
 function create_jobs_mp() {
-  create_job("MP1", 2, 300, 340, 0, 600);
+  create_job("MP1", 2, 300, 340, 2, 0, 600);
 }
 
 function create_jobs_ca() {
   GLOBAL $wf;
   if ($wf['f_type'] == "CA1") {
-    create_job("CA1", 0, 60, 80, 600, 0);
-    create_job("CA1", 1, 600, 640, 600, 0);
+    create_job("CA1", 0, 60, 80, 1, 600, 0);
+    create_job("CA1", 1, 600, 640, 1, 600, 0);
   }
   if ($wf['f_type'] == "CA2") {
-    create_job("CA2", 0, 60, 80, 600, 0);
-    create_job("CA2", 1, 600, 640, 600, 0);
+    create_job("CA2", 0, 60, 80, 1, 600, 0);
+    create_job("CA2", 1, 600, 640, 1, 600, 0);
   }
 }
 

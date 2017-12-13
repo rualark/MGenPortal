@@ -33,6 +33,7 @@ function show_job_icon($w, $c, $t=0) {
       return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
     else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
   }
+  return "-";
 }
 
 function show_uploads() {
@@ -182,7 +183,7 @@ function show_upload() {
   echo "</form>";
 }
 
-function show_jobs($f_id) {
+function show_jobs($f_id, $j_id=0) {
   GLOBAL $ml, $ftypes2, $jclasses;
   echo "<table class='table'>"; // table-striped table-hover
   echo "<thead>";
@@ -198,6 +199,7 @@ function show_jobs($f_id) {
   echo "</thead>";
   echo "<tbody>";
   if ($f_id) $cond = " AND f_id='$f_id'";
+  else if ($j_id) $cond = " AND j_id='$j_id'";
   else $cond = " AND f_private=0";
   $r = mysqli_query($ml, "SELECT * FROM jobs
     LEFT JOIN files USING (f_id) 
@@ -246,10 +248,11 @@ function show_status() {
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<div class=col-sm-4>";
-    echo "<a href='share/screen$w[s_id].png' target=_blank><img title='#$w[s_id]: $w[s_host]";
-    if ($w['pass'] < 5) echo "\n".human_pass($w[os_age])." since OS restart";
-    echo "' class='img-fluid img-thumbnail' src='share/screen$w[s_id].png'></a>";
+    echo "<a href='share/screen$w[s_id].png' target=_blank><img src='share/screen$w[s_id].png' title='#";
+    if ($w['pass'] < 5) echo "\n".human_pass($w['os_age'])." since OS restart";
+    echo "' class='img-fluid img-thumbnail'></a>";
     echo "<br>";
+    echo "#$w[s_id]: $w[s_host]";
     if ($w['pass'] < 5) {
       echo "<p title='Last update $w[pass] seconds ago' class=text-success><b>Online for ".human_pass($w['server_age'])."</b></p>";
       if ($w['reaper_age'] > 0) echo "<img title='Reaper online for ".human_pass($w['reaper_age'])."' src='img/reaper.png' height=$bheight2> ";
@@ -278,8 +281,13 @@ function show_status() {
 }
 
 function show_job() {
-  GLOBAL $j_id, $wj;
+  GLOBAL $j_id, $wj, $ftypes, $jclasses;
   echo "<h2 align=center>Job #$j_id for file <a href='file.php?f_id=$wj[f_id]'>$wj[f_name]</a></h2>";
+  echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
+  echo "<p><b>Processing server:</b> ";
+  if ($wj['s_id']) echo "<a href=status.php>#$wj[s_id]</a>";
+  echo "<p><b>Priority:</b> $wj[j_priority]</p>";
+  show_jobs(0, $j_id);
 }
 
 function show_job_editor() {

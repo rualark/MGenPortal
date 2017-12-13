@@ -119,8 +119,9 @@ function login () {
       echo mysqli_error($ml);
       $w = mysqli_fetch_assoc($r);
       if(mysqli_num_rows($r) == 1 && md5($w['u_login'].$w['u_pass']) == $_COOKIE['mgen_pass']) {
-        $uid = $_SESSION['mgen_u_id'];
+        $uid = $w['u_id'];
         $_SESSION['mgen_u_id'] = $uid;
+        $uid = $_SESSION['mgen_u_id'];
         lastAct();
         load_user();
         return 1;
