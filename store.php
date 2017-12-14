@@ -16,6 +16,7 @@ $jconfig = secure_variable_post("jconfig");
 if (!$action) {
   $action = secure_variable("action");
   $f_id = secure_variable("f_id");
+  $j_id = secure_variable("j_id");
 }
 
 login();
@@ -84,9 +85,26 @@ if ($action == "start" && $uid && $f_id) {
     die ("<script language=javascript>location.replace('index.php');</script>");
   }
   // Update field
-  mysqli_query($ml,"UPDATE jobs SET j_state=1 WHERE f_id='$f_id' AND j_deleted=0 AND j_state=0");
+  mysqli_query($ml,"UPDATE jobs SET j_state=1, j_queued=NOW() WHERE f_id='$f_id' AND j_deleted=0 AND j_state=0");
   echo mysqli_error($ml);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
+}
+
+// Start job
+if ($action == "startjob" && $uid && $j_id) {
+  load_job();
+  // Check authority
+  if ($wj['u_id'] != $uid) {
+    die ("<script language=javascript>location.replace('index.php');</script>");
+  }
+  // Check state
+  if ($wj['j_deleted'] || $wj['j_state'] == 1 || $wj['j_state'] == 2) {
+    die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
+  }
+  // Update field
+  mysqli_query($ml,"UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id' AND j_deleted=0 AND j_state=0");
+  echo mysqli_error($ml);
+  die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
 }
 
 if ($action == "jconfig" && $j_id && $uid) {
