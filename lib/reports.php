@@ -107,7 +107,7 @@ function show_uploads() {
 function show_upload() {
   GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes;
   echo "<div class=container>";
-  echo "<br><h2 align=center>$wf[f_name] uploaded by $wf[u_name]</h2>";
+  echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'>$wf[f_name]</a> uploaded by $wf[u_name]</h2>";
   echo "<hr>";
   if ($uid == $wf['u_id']) {
     echo "<form action=store.php method=post>";
@@ -297,26 +297,55 @@ function show_status() {
 }
 
 function show_job() {
-  GLOBAL $j_id, $wj, $ftypes, $jclasses;
+  GLOBAL $j_id, $wj, $ftypes, $jclasses, $ml;
   echo "<h2 align=center>Job #$j_id for file <a href='file.php?f_id=$wj[f_id]'>$wj[f_name]</a></h2>";
-  echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
+  show_jobs(0, $j_id);
+  echo "<hr>";
+  //echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
+  if ($wj['j_deleted']) {
+    echo  "<p style='color:lightgray' align>Cannot start - this job is deleted</p>";
+  }
+  else {
+    if ($wj['j_state'] == 0)
+      echo " <p align='right'><a target='_blank' class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
+        Start job</a><br>";
+    else if ($wj['j_state'] == 3)
+      echo " <p align='right'><a target='_blank' class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
+        Restart job</a><br>";
+    else
+      echo  "<p style='color:lightgray' align='right'>Cannot restart - this job has not finished yet</p>";
+  }
   echo "<p><b>Processing server:</b> ";
   if ($wj['s_id']) echo "<a href=status.php>#$wj[s_id]</a>";
   echo "<p><b>Priority:</b> $wj[j_priority] ";
   echo "<p><b>Progress:</b> $wj[j_progress]</p>";
   echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
-  echo "<p><a target=_blank href='share/$wj[j_folder]'>Browse job folder</a></p>";
-  show_jobs(0, $j_id);
+  echo "<p><a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[f_folder]/$wj[f_name]'>Initial file</a> ";
+  echo "<a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[j_folder]'>Browse job folder</a>";
+  $r = mysqli_query($ml, "SELECT * FROM j_logs WHERE j_id='$j_id'
+    ORDER BY l_time DESC");
+  echo mysqli_error($ml);
+  $n = mysqli_num_rows($r);
+  if ($n) {
+    echo "<hr><h3>Job logs:</h3>";
+    echo "<pre>";
+    for ($i=0; $i<$n; ++$i) {
+      $w = mysqli_fetch_assoc($r);
+      echo "$w[l_time] $w[l_text]\n";
+    }
+    echo "</pre>";
+  }
 }
 
 function show_job_editor() {
-  GLOBAL $jconfig, $j_id, $cm_theme;
+  GLOBAL $jconfig, $j_id, $cm_theme, $wj;
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/lib/codemirror.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/theme/$cm_theme.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/dialog/dialog.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/search/matchesonscrollbar.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/display/fullscreen.css'>";
 
+  echo "<hr><h3>Job config:</h3>";
   echo "<form id='preview-form' method='post' action='store.php'>";
   echo "<input type=hidden name=action value=jconfig>";
   echo "<input type=hidden name=j_id value='$j_id'>";
@@ -324,11 +353,17 @@ function show_job_editor() {
   echo $jconfig;
   echo "</textarea>";
   echo "<br>";
-  echo "<button type=submit value=submit name=submit class='btn btn-primary'>Save config</button> ";
-  echo " <a target='_blank' class=\"btn btn-outline-primary\" href=\"https://github.com/rualark/MGenPortal/wiki/Editing-job-configuration#user-content-job-config-editor-keyboard-shortcuts\" role=\"button\">
+  if ($wj['j_deleted'] == 0) {
+    echo "<button type=submit value=submit name=submit class='btn btn-primary'>Save config</button> ";
+    echo " <a target='_blank' class=\"btn btn-outline-primary\" href=\"https://github.com/rualark/MGenPortal/wiki/Editing-job-configuration#user-content-job-config-editor-keyboard-shortcuts\" role=\"button\">
     Keyboard shortcuts</a>";
+  }
+  else
+    echo "<p class='text-danger'>You cannot change config because this job is deleted. Edit config of active job for this <a href=file.php?f_id=$wj[f_id]>file</a>.</p>";
   echo " <a target='_blank' class=\"btn btn-outline-primary\" href='share/MGen/configs' role=\"button\">
     Example and include configs</a>";
+  echo " <a target='_blank' class=\"btn btn-outline-primary\" href='share/MGen/instruments' role=\"button\">
+    Instrument configs</a>";
   echo "</form>";
 }
 ?>

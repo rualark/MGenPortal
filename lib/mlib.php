@@ -130,7 +130,7 @@ function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_
   }
   // Autostart job
   if ($ua['u_job_autostart']) {
-    mysqli_query($ml, "UPDATE jobs SET j_state=1 WHERE j_id='$j_id'");
+    mysqli_query($ml, "UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id'");
     echo mysqli_error($ml);
   }
 }
