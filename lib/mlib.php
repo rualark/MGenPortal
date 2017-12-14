@@ -102,7 +102,7 @@ function get_typename($t) {
 }
 
 function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_engrave, $j_render) {
-  GLOBAL $ml, $ua, $uid, $f_id, $wf;
+  GLOBAL $ml, $uid, $f_id, $wf;
   // Create job draft
   mysqli_query($ml, "INSERT INTO jobs 
     (j_added, j_priority, j_type, j_class, f_id, j_timeout, j_timeout2, 
@@ -128,11 +128,7 @@ function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_
       file_put_contents($fname_pl, "corrections = 1 # Enable correcting score\n", FILE_APPEND);
     }
   }
-  // Autostart job
-  if ($ua['u_job_autostart']) {
-    mysqli_query($ml, "UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id'");
-    echo mysqli_error($ml);
-  }
+  return $j_id;
 }
 
 function inject_config($j_class, $tag, $value) {
@@ -152,16 +148,17 @@ function inject_config($j_class, $tag, $value) {
 }
 
 function copy_job($j_type, $j_class) {
-  GLOBAL $f_id, $ml, $wf;
+  GLOBAL $f_id, $ml;
   $r = mysqli_query($ml, "SELECT * FROM jobs 
+    LEFT JOIN files USING (f_id) 
     WHERE j_class='$j_class' AND j_type='$j_type' AND f_id='$f_id'
     ORDER BY j_added DESC");
   echo mysqli_error($ml);
   $w = mysqli_fetch_assoc($r);
   $w2 = mysqli_fetch_assoc($r);
   if (!$w['j_id'] || !$w2['j_id']) return;
-  $fname_pl =  "share/$w[j_folder]".bfname($wf['f_name']).".pl";
-  $fname_pl2 = "share/$w2[j_folder]".bfname($wf['f_name']).".pl";
+  $fname_pl =  "share/$w[j_folder]".bfname($w['f_name']).".pl";
+  $fname_pl2 = "share/$w2[j_folder]".bfname($w2['f_name']).".pl";
   copy($fname_pl2, $fname_pl);
 }
 
@@ -190,6 +187,12 @@ function copy_jobs_ca() {
 function copy_jobs_mp() {
   GLOBAL $wf;
   copy_job($wf['f_type'], 2);
+}
+
+function deactivate_job() {
+  GLOBAL $j_id, $ml;
+  mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE j_id='$j_id'");
+  echo mysqli_error($ml);
 }
 
 function deactivate_jobs_mp() {

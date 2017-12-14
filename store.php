@@ -112,6 +112,15 @@ if ($action == "jconfig" && $j_id && $uid) {
   //echo "<pre>";
   //echo $jconfig;
   load_job();
+  $f_id = $wj['f_id'];
+  if ($wj['j_state'] > 0) {
+    deactivate_job();
+    $j_id = create_job($wj['j_type'], $wj['j_class'], $wj['j_timeout'], $wj['j_timeout2'],
+      $wj['j_priority'], $wj['j_engrave'], $wj['j_render']);
+    copy_job($wj['j_type'], $wj['j_class']);
+    delete_old_drafts();
+    load_job();
+  }
   save_job_config();
   die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
 }

@@ -12,6 +12,15 @@ function get_job_queue_place($wj) {
   return $w['cnt'];
 }
 
+function get_job_queue_wait($wj) {
+  GLOBAL $ml;
+  $r = mysqli_query($ml, "SELECT TIMESTAMPDIFF(SECOND, j_queued, NOW()) as pass 
+    FROM jobs WHERE j_id='$wj[j_id]'");
+  echo mysqli_error($ml);
+  $w = mysqli_fetch_assoc($r);
+  return $w['pass'];
+}
+
 function show_job_icon($w, $c, $t=0) {
   GLOBAL $bheight;
   if (!$w['j_id']) return "-";
@@ -21,7 +30,8 @@ function show_job_icon($w, $c, $t=0) {
     if ($w['j_state'] == 0)
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
-      return "<a title='Will run after ".get_job_queue_place($w)." jobs' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+      return "<a title='Will run after ".get_job_queue_place($w)." jobs\nWaiting in queue for ".
+        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
     if ($w['j_state'] == 2)
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
@@ -36,7 +46,8 @@ function show_job_icon($w, $c, $t=0) {
     if ($w['j_state'] == 0)
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
-      return "<a title='Will run after ".get_job_queue_place($w)." jobs' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+      return "<a title='Will run after ".get_job_queue_place($w)." jobs\nWaiting in queue for ".
+        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
     if ($w['j_state'] == 2)
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
     if ($w['j_state'] == 3 && $w['j_result'])
@@ -297,7 +308,7 @@ function show_status() {
 }
 
 function show_job() {
-  GLOBAL $j_id, $wj, $ftypes, $jclasses, $ml;
+  GLOBAL $j_id, $wj, $ml;
   echo "<h2 align=center>Job #$j_id for file <a href='file.php?f_id=$wj[f_id]'>$wj[f_name]</a></h2>";
   show_jobs(0, $j_id);
   echo "<hr>";
@@ -339,6 +350,14 @@ function show_job() {
 
 function show_job_editor() {
   GLOBAL $jconfig, $j_id, $cm_theme, $wj;
+  if ($wj['j_deleted'] == 0) {
+    $cm_theme = "material";
+    $cm_readonly = "false";
+  }
+  else {
+    $cm_theme = "duotone-light";
+    $cm_readonly = "true";
+  }
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/lib/codemirror.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/theme/$cm_theme.css'>";
   echo "<link rel='stylesheet' type='text/css' href='plugin/codemirror/addon/dialog/dialog.css'>";
@@ -358,12 +377,56 @@ function show_job_editor() {
     echo " <a target='_blank' class=\"btn btn-outline-primary\" href=\"https://github.com/rualark/MGenPortal/wiki/Editing-job-configuration#user-content-job-config-editor-keyboard-shortcuts\" role=\"button\">
     Keyboard shortcuts</a>";
   }
-  else
+  else {
     echo "<p class='text-danger'>You cannot change config because this job is deleted. Edit config of active job for this <a href=file.php?f_id=$wj[f_id]>file</a>.</p>";
+  }
   echo " <a target='_blank' class=\"btn btn-outline-primary\" href='share/MGen/configs' role=\"button\">
     Example and include configs</a>";
   echo " <a target='_blank' class=\"btn btn-outline-primary\" href='share/MGen/instruments' role=\"button\">
     Instrument configs</a>";
   echo "</form>";
+
+  echo "<script src=\"js/jquery.min.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/lib/codemirror.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/addon/dialog/dialog.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/addon/search/search.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/addon/search/searchcursor.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/addon/search/matchesonscrollbar.js\"></script>
+  <script type=\"text/javascript\" src=\"plugin/codemirror/addon/display/fullscreen.js\"></script>
+  <script src=\"plugin/codemirror/mode/perl/perl.js\"></script>
+  <script>
+    $(document).ready(function(){
+        //code here...
+        var code = $(\".codemirror-textarea\")[0];
+        var editor = CodeMirror.fromTextArea(code, {
+            lineNumbers : false,
+            matchBrackets: true,
+            mode: 'perl',
+            styleActiveLine: true,
+            indentUnit: 2,
+            readOnly: $cm_readonly,
+            theme: '$cm_theme',
+            extraKeys: {
+                \"Alt-F\": \"findPersistent\",
+                \"F11\": function(cm) {
+                    cm.setOption(\"fullScreen\", !cm.getOption(\"fullScreen\"));
+                },
+                \"Esc\": function(cm) {
+                    if (cm.getOption(\"fullScreen\")) cm.setOption(\"fullScreen\", false);
+                }
+            }
+        });
+        editor.display.wrapper.style.fontSize = \"16px\";
+        editor.setSize(\"100%\", 500);
+
+        //when form submitted
+        $(\"#preview-form\").submit(function(e){
+            var value = editor.getValue();
+            if(value.length == 0) {
+                alert(\"Missing comment!\");
+            }
+        });
+    });
+  </script>";
 }
 ?>
