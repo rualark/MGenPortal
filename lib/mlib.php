@@ -79,6 +79,27 @@ function load_job_config() {
   $jconfig = file_get_contents("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl");
 }
 
+function parse_job_config() {
+  GLOBAL $ca, $wj;
+  $ca = array();
+  $fa = file("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl");
+  for($i=0; $i<count($fa); ++$i) {
+    $st = $fa[$i];
+    $pos = strpos($st, "#");
+    if ($pos !== false) {
+      $st = substr($st, 0, $pos);
+    }
+    $pos = strpos($st, "=");
+    if ($pos !== false) {
+      $key = substr($st, 0, $pos);
+      $val = substr($st, 0, $pos);
+      $key = trim($key);
+      $val = trim($val);
+      $ca[$key] = $val;
+    }
+  }
+}
+
 function save_job_config() {
   GLOBAL $wj, $jconfig;
   file_put_contents("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl", $jconfig);
