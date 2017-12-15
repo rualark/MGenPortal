@@ -5,6 +5,7 @@ $bheight = 24;
 $bheight2 = 36;
 $wf = 0;
 $wj = 0;
+$waj = 0;
 
 $ftypes = array(
   'CA1' => "Cantus firmus",
@@ -15,7 +16,7 @@ $ftypes = array(
 $ftypes2 = array(
   'CA1' => "Cantus",
   'CA2' => "Counterpoint",
-  'MP1' => "Other"
+  'MP1' => "Any"
 );
 
 $jclasses = array(
@@ -31,7 +32,7 @@ $vtypes = array(
   2 => "Private"
 );
 
-$default_ilist = "Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano,Piano";
+$default_ilist = "Piano";
 
 function furl($w) {
   return $w['f_folder'] . $w['f_name'];
@@ -61,13 +62,14 @@ function load_file() {
 }
 
 function load_job() {
-  GLOBAL $j_id, $ml, $wj;
+  GLOBAL $j_id, $ml, $wj, $f_id;
   $r = mysqli_query($ml, "SELECT * FROM jobs
     LEFT JOIN files USING (f_id) 
     LEFT JOIN users USING (u_id)
     WHERE j_id='$j_id'");
   echo mysqli_error($ml);
   $wj = mysqli_fetch_assoc($r);
+  $f_id = $wj['f_id'];
 }
 
 function load_job_config() {
@@ -81,8 +83,8 @@ function save_job_config() {
 }
 
 function load_active_jobs() {
-  GLOBAL $f_id, $ml, $wj;
-  $wj = array();
+  GLOBAL $f_id, $ml, $waj;
+  $waj = array();
   $r = mysqli_query($ml, "SELECT * FROM jobs
     LEFT JOIN files USING (f_id) 
     LEFT JOIN users USING (u_id)
@@ -91,7 +93,7 @@ function load_active_jobs() {
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
-    $wj[$w['j_class']] = $w;
+    $waj[$w['j_class']] = $w;
   }
 }
 
@@ -125,15 +127,16 @@ function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_
     file_put_contents($fname_pl, "Midi_file = server\\midi\\" . $wf['f_name'] . "\n", FILE_APPEND);
     // Append correct to config if correcting
     if ($j_class  == 1) {
-      file_put_contents($fname_pl, "corrections = 1 # Enable correcting score\n", FILE_APPEND);
+      $wj['j_folder'] = $j_folder;
+      $wj['f_name'] = $wf['f_name'];
+      inject_config($wj, "corrections", "1", "Enable correcting scores");
     }
   }
   return $j_id;
 }
 
-function inject_config($j_class, $tag, $value) {
-  GLOBAL $wj;
-  $fname_pl =  "share/".$wj[$j_class]['j_folder'].bfname($wj[$j_class]['f_name']).".pl";
+function inject_config($wj, $tag, $value, $comm="") {
+  $fname_pl =  "share/".$wj['j_folder'] . bfname($wj['f_name']).".pl";
   // Read config
   $fa = file($fname_pl);
   // Write config without tag
@@ -143,7 +146,9 @@ function inject_config($j_class, $tag, $value) {
     fwrite($fh, $fa[$i]);
   }
   // Write tag
-  fwrite($fh, "$tag = $value\n");
+  $st = "$tag = $value";
+  if ($comm != "") $st .= " # $comm";
+  fwrite($fh, "$st\n");
   fclose($fh);
 }
 

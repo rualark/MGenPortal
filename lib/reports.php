@@ -116,9 +116,9 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes;
+  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight;
   echo "<div class=container>";
-  echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'>$wf[f_name]</a> uploaded by $wf[u_name]</h2>";
+  echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'><img src='img/midi.png' height='$bheight'></a> $wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
   if ($uid == $wf['u_id']) {
     echo "<form action=store.php method=post>";
@@ -269,13 +269,13 @@ function show_status() {
   $r = mysqli_query($ml, "SELECT *, 
     TIMESTAMPDIFF(SECOND, last_update, NOW()) as pass 
     FROM s_status
-    ORDER BY last_update DESC");
+    ORDER BY pass>5, server_age DESC");
   echo mysqli_error($ml);
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<div class=col-sm-4>";
-    echo "<a href='share/screen$w[s_id].png' target=_blank><img src='share/screen$w[s_id].png' title='#";
+    echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png' title='#";
     if ($w['pass'] < 5) echo "\n".human_pass($w['os_age'])." since OS restart";
     echo "' class='img-fluid img-thumbnail'></a>";
     echo "<br>";
@@ -314,14 +314,14 @@ function show_job() {
   echo "<hr>";
   //echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
   if ($wj['j_deleted']) {
-    echo  "<p style='color:lightgray' align>Cannot start - this job is deleted</p>";
+    echo  "<p style='color:lightgray' align='right'>Cannot start - this job is deleted</p>";
   }
   else {
     if ($wj['j_state'] == 0)
-      echo " <p align='right'><a target='_blank' class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
+      echo " <p align='right'><a class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
         Start job</a><br>";
     else if ($wj['j_state'] == 3)
-      echo " <p align='right'><a target='_blank' class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
+      echo " <p align='right'><a class=\"btn btn-success\" href='store.php?action=startjob&j_id=$j_id' role=\"button\">
         Restart job</a><br>";
     else
       echo  "<p style='color:lightgray' align='right'>Cannot restart - this job has not finished yet</p>";
@@ -332,7 +332,7 @@ function show_job() {
   echo "<p><b>Progress:</b> $wj[j_progress]</p>";
   echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
   echo "<p><a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[f_folder]/$wj[f_name]'>Initial file</a> ";
-  echo "<a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[j_folder]'>Browse job folder</a>";
+  echo "<a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[j_folder]'>Browse config, results and logs (job folder)</a>";
   $r = mysqli_query($ml, "SELECT * FROM j_logs WHERE j_id='$j_id'
     ORDER BY l_time DESC");
   echo mysqli_error($ml);
@@ -344,6 +344,12 @@ function show_job() {
       $w = mysqli_fetch_assoc($r);
       echo "$w[l_time] $w[l_text]\n";
     }
+    echo "</pre>";
+  }
+  if (file_exists("share/$wj[j_folder]log-warning.log")) {
+    echo "<hr><h3>MGen warning log:</h3>";
+    echo "<pre>";
+    echo file_get_contents("share/$wj[j_folder]log-warning.log");
     echo "</pre>";
   }
 }

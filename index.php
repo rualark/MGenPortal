@@ -5,18 +5,11 @@ require_once "lib/auth.php";
 
 $title = "$site_name";
 
-if (login()) {
-  //echo "Your session is logged in, $ua[u_name]<br>";
-  //echo "<a href='login.php?action=out'>Sign out</a>";
-}
-else {
-  //echo "Hello guest! Please <a href='login.php'>login</a> or register:<br>";
-  //show_reg_form();
-}
+login();
 
 include "template/menu.php";
 if ($uid) {
-  include "template/main.php";
+  include "template/guest.php";
 }
 else {
   include "template/guest.php";

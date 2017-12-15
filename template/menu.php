@@ -31,6 +31,7 @@
       ?>
         <ul class="navbar-nav mr-auto">
           <li class=nav-item><a class=nav-link href="upload.php"><b>Upload</b></a></li>
+          <!--
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
@@ -39,14 +40,10 @@
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Explore</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="docs.php">Docs</a>
-              <a class="dropdown-item" href="explore.php">About</a>
-            </div>
-          </li>
+          -->
+          <li class=nav-item><a class=nav-link href="files.php">Files</a></li>
+          <li class=nav-item><a class=nav-link href="https://github.com/rualark/MGenPortal/wiki" target="_blank">
+              Docs</a></li>
           <li class=nav-item><a class=nav-link href="status.php">Status</a></li>
           <li class=nav-item><a class=nav-link href="contact.php">Contact</a></li>
         </ul>
@@ -65,6 +62,7 @@
       else {
         ?>
         <ul class="navbar-nav mr-auto">
+          <!--
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Music</a>
@@ -73,6 +71,10 @@
               <a class="dropdown-item" href="passages.php">Passages</a>
             </div>
           </li>
+          -->
+          <li class=nav-item><a class=nav-link href="files.php">Files</a></li>
+          <li class=nav-item><a class=nav-link href="https://github.com/rualark/MGenPortal/wiki" target="_blank">
+              Docs</a></li>
           <li class=nav-item><a class=nav-link href="contact.php">Contact</a></li>
         </ul>
         <ul class="navbar-nav">
