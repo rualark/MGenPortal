@@ -116,7 +116,7 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight;
+  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight, $MAX_INSTR;
   echo "<div class=container>";
   echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'><img src='img/midi.png' height='$bheight'></a> $wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
@@ -150,6 +150,34 @@ function show_upload() {
       echo ">$val</option>";
     }
     echo "</select>";
+    echo "</div></div>";
+    echo "</form>";
+
+    echo "<form action=store.php method=post>";
+    echo "<input type=hidden name=f_id value='$f_id'>";
+    echo "<input type=hidden name=action value=ilist_size>";
+    echo "<div class='form-group row'>";
+    echo "<label for=ilist_size class='col-sm-2 col-form-label'>Voices:</label>";
+    echo "<div class=col-sm-10>";
+    echo "<select class=\"custom-select\" id=ilist_size name=ilist_size onChange='this.form.submit();'>";
+    $ia = explode(",", $wf['f_instruments']);
+    for ($i=1; $i<$MAX_INSTR; ++$i) {
+      echo "<option value=$i";
+      if ($i == count($ia)) echo " selected";
+      echo ">$i</option>";
+    }
+    echo "</select>";
+    echo "</div></div>";
+    echo "</form>";
+
+    echo "<form action=store.php method=post>";
+    echo "<input type=hidden name=f_id value='$f_id'>";
+    echo "<input type=hidden name=action value=f_instruments>";
+    echo "<div class='form-group row'>";
+    echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
+    echo "<div class=col-sm-10>";
+    show_iselects($wf['f_instruments']);
+    echo "<button type=submit name=submit class=\"btn btn-primary\">Save</button>";
     echo "</div></div>";
     echo "</form>";
 
@@ -435,5 +463,32 @@ function show_job_editor() {
         });
     });
   </script>";
+}
+
+function show_iselect($id, $name) {
+  GLOBAL $ml;
+  $r = mysqli_query($ml, "SELECT * FROM instr");
+  echo mysqli_error($ml);
+  $n = mysqli_num_rows($r);
+  echo "<select class=\"custom-select\" id='isel$id' name='isel$id'>";
+  for ($i=0; $i<$n; ++$i) {
+    $w = mysqli_fetch_assoc($r);
+    echo "<option value=$w[i_name]";
+    if ($w['i_name'] == $name) echo " selected";
+    echo ">$w[i_name]</option>";
+  }
+  echo "</select> ";
+}
+
+function show_iselects($ilist) {
+  if ($ilist != "") {
+    $ia = explode(",", $ilist);
+    $id = 0;
+    foreach($ia as $key => $val) {
+      $val = trim($val);
+      show_iselect($id, $val);
+      ++$id;
+    }
+  }
 }
 ?>

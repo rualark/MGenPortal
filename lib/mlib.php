@@ -32,7 +32,9 @@ $vtypes = array(
   2 => "Private"
 );
 
+$default_instr = "Piano";
 $default_ilist = "Piano";
+$MAX_INSTR = 64;
 
 function furl($w) {
   return $w['f_folder'] . $w['f_name'];
@@ -217,6 +219,24 @@ function delete_old_drafts() {
   // Delete deactivated drafts
   mysqli_query($ml, "DELETE FROM jobs WHERE f_id='$f_id' AND j_state=0 AND j_deleted=1");
   echo mysqli_error($ml);
+}
+
+function change_ilist_len($ilist, $len) {
+  GLOBAL $default_instr;
+  $ia = explode(",", $ilist);
+  if (count($ia) < $len) {
+    for ($i=0; $i<$len - count($ia); ++$i) {
+      $ilist .= ",$default_instr";
+    }
+  }
+  else if (count($ia) > $len) {
+    $ilist = "";
+    for ($i=0; $i<$len; ++$i) {
+      if ($ilist != "") $ilist .= ",";
+      $ilist .= $ia[$i];
+    }
+  }
+  return $ilist;
 }
 
 ?>
