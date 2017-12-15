@@ -15,6 +15,7 @@
     </div>
     <button type=submit value=login name=log_in class="btn btn-primary">Login</button>
   </form>
-  <p><a href="reg.php">Forgot your password?</a></p>
+  <br>
+  <p><a href="pass_reset.php">Forgot your password?</a></p>
   <p>New to <?=$site_name ?>? <a href="reg.php">Create an account.</a></p>
 </div>
