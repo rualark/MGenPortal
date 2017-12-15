@@ -11,6 +11,7 @@ $f_type = secure_variable_post("f_type");
 $f_private = secure_variable_post("f_private");
 $f_instruments = secure_variable_post("f_instruments");
 $jconfig = secure_variable_post("jconfig");
+$ilist_size = secure_variable_post("ilist_size");
 
 // Load GET
 if (!$action) {
@@ -105,6 +106,14 @@ if ($action == "startjob" && $uid && $j_id) {
   mysqli_query($ml,"UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id'");
   echo mysqli_error($ml);
   die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
+}
+
+if ($action == "ilist_size" && $uid && $f_id && $ilist_size) {
+  load_file();
+  $wf['f_instruments'] = change_ilist_len($wf['f_instruments'], $ilist_size);
+  mysqli_query($ml,"UPDATE files SET f_instruments='$wf[f_instruments]' WHERE f_id='$f_id'");
+  echo mysqli_error($ml);
+  die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
 
 if ($action == "jconfig" && $j_id && $uid) {
