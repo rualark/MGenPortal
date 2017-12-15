@@ -154,11 +154,11 @@ function inject_config($wj, $tag, $value, $comm="") {
   fclose($fh);
 }
 
-function copy_job($j_type, $j_class) {
+function copy_job_config($j_class) {
   GLOBAL $f_id, $ml;
   $r = mysqli_query($ml, "SELECT * FROM jobs 
     LEFT JOIN files USING (f_id) 
-    WHERE j_class='$j_class' AND j_type='$j_type' AND f_id='$f_id'
+    WHERE j_class='$j_class' AND f_id='$f_id'
     ORDER BY j_added DESC");
   echo mysqli_error($ml);
   $w = mysqli_fetch_assoc($r);
@@ -169,31 +169,19 @@ function copy_job($j_type, $j_class) {
   copy($fname_pl2, $fname_pl);
 }
 
-function create_jobs_mp() {
-  create_job("MP1", 2, 300, 340, 2, 0, 600);
-}
-
-function create_jobs_ca() {
-  GLOBAL $wf;
-  if ($wf['f_type'] == "CA1") {
-    create_job("CA1", 0, 60, 80, 1, 600, 0);
-    create_job("CA1", 1, 600, 640, 1, 600, 0);
+function create_jobs($f_type, $j_class=-1) {
+  if ($f_type == "CA1" || $f_type == "CA2") {
+    if ($j_class == -1 || $j_class == 0)
+      create_job($f_type, 0, 60, 80, 1, 600, 0);
+    if ($j_class == -1 || $j_class == 1)
+      create_job($f_type, 1, 600, 640, 1, 600, 0);
+    if ($j_class == -1 || $j_class == 2)
+      create_job($f_type, 2, 60, 80, 2, 0, 600);
   }
-  if ($wf['f_type'] == "CA2") {
-    create_job("CA2", 0, 60, 80, 1, 600, 0);
-    create_job("CA2", 1, 600, 640, 1, 600, 0);
+  if ($f_type == "MP1") {
+    if ($j_class == -1 || $j_class == 2)
+      create_job("MP1", 2, 300, 340, 2, 0, 600);
   }
-}
-
-function copy_jobs_ca() {
-  GLOBAL $wf;
-  copy_job($wf['f_type'], 0);
-  copy_job($wf['f_type'], 1);
-}
-
-function copy_jobs_mp() {
-  GLOBAL $wf;
-  copy_job($wf['f_type'], 2);
 }
 
 function deactivate_job() {
@@ -202,15 +190,15 @@ function deactivate_job() {
   echo mysqli_error($ml);
 }
 
-function deactivate_jobs_mp() {
+function deactivate_jobs($j_class) {
   GLOBAL $f_id, $ml;
-  mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id' AND j_class=2");
+  mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id' AND j_class='$j_class'");
   echo mysqli_error($ml);
 }
 
-function deactivate_jobs_ca() {
+function deactivate_all_jobs() {
   GLOBAL $f_id, $ml;
-  mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id' AND j_class<2");
+  mysqli_query($ml, "UPDATE jobs SET j_deleted=1 WHERE f_id='$f_id'");
   echo mysqli_error($ml);
 }
 

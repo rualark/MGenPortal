@@ -37,10 +37,11 @@ function upload_file() {
   $fname2 = str_replace(".midi", ".mid", $fname2);
   $fname2 = preg_replace('/[^0-9a-zA-Z_\-\.]/',"",$fname2);
   if (strlen($fname2) < 7) $fname2 = date("Y-m-d-") . $fname2;
+  $f_type = "CA2";
   // Insert into sql
   mysqli_query($ml, "INSERT INTO files 
     (f_name, f_time, f_private, u_id, f_format, f_source, f_type, f_instruments)
-    VALUES('$fname2', NOW(), 0, '$uid', 'MIDI', '$fname', 'CA2', '$default_ilist')");
+    VALUES('$fname2', NOW(), 0, '$uid', 'MIDI', '$fname', '$f_type', '$default_ilist')");
   echo mysqli_error($ml);
   // Set job folder
   $f_id = mysqli_insert_id($ml);
@@ -53,8 +54,7 @@ function upload_file() {
 
   load_file();
   // Create jobs
-  create_jobs_ca();
-  create_jobs_mp();
+  create_jobs($f_type);
   load_active_jobs();
   inject_config($waj[2], "Instruments", $default_ilist);
   //echo "New name: $fname2<br>";

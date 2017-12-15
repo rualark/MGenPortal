@@ -33,9 +33,11 @@ if ($action == "f_type" && $uid && $f_id && $f_type) {
   mysqli_query($ml,"UPDATE files SET f_type='$f_type' WHERE f_id='$f_id'");
   echo mysqli_error($ml);
   load_file();
-  deactivate_jobs_ca();
-  create_jobs_ca();
+  deactivate_all_jobs();
+  create_jobs($f_type);
   delete_old_drafts();
+  load_active_jobs();
+  inject_config($waj[2], "Instruments", $wf['f_instruments']);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
 
@@ -66,9 +68,9 @@ if ($action == "f_instruments" && $uid && $f_id) {
   load_active_jobs();
   // Recreate job if it is not draft already
   if (isset($waj[2]) && $waj[2]['j_state'] > 0) {
-    deactivate_jobs_mp();
-    create_jobs_mp();
-    copy_job("MP1", 2);
+    deactivate_jobs(2);
+    create_jobs($wf['f_type'], 2);
+    copy_job_config(2);
     delete_old_drafts();
     load_active_jobs();
   }
@@ -126,7 +128,7 @@ if ($action == "jconfig" && $j_id && $uid) {
     deactivate_job();
     $j_id = create_job($wj['j_type'], $wj['j_class'], $wj['j_timeout'], $wj['j_timeout2'],
       $wj['j_priority'], $wj['j_engrave'], $wj['j_render']);
-    copy_job($wj['j_type'], $wj['j_class']);
+    copy_job_config($wj['j_class']);
     delete_old_drafts();
     load_job();
   }
