@@ -33,11 +33,14 @@ if ($action == "f_type" && $uid && $f_id && $f_type) {
   mysqli_query($ml,"UPDATE files SET f_type='$f_type' WHERE f_id='$f_id'");
   echo mysqli_error($ml);
   load_file();
+  load_active_jobs();
+  parse_jobs_config();
   deactivate_all_jobs();
+  $create_cause = "Changed file type";
   create_jobs($f_type);
   delete_old_drafts();
   load_active_jobs();
-  inject_config($waj[2], "Instruments", $wf['f_instruments']);
+  inject_config($waj[2], "Instruments", $caa[2]['instruments']);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
 
@@ -69,6 +72,7 @@ if ($action == "f_instruments" && $uid && $f_id) {
   // Recreate job if it is not draft already
   if (isset($waj[2]) && $waj[2]['j_state'] > 0) {
     deactivate_jobs(2);
+    $create_cause = "Changed instruments";
     create_jobs($wf['f_type'], 2);
     copy_job_config(2);
     delete_old_drafts();
@@ -112,9 +116,12 @@ if ($action == "startjob" && $uid && $j_id) {
 
 if ($action == "ilist_size" && $uid && $f_id && $ilist_size) {
   load_file();
-  $wf['f_instruments'] = change_ilist_len($wf['f_instruments'], $ilist_size);
-  mysqli_query($ml,"UPDATE files SET f_instruments='$wf[f_instruments]' WHERE f_id='$f_id'");
-  echo mysqli_error($ml);
+  load_active_jobs();
+  parse_jobs_config();
+  $f_instruments = change_ilist_len($caa[2]['instruments'], $ilist_size);
+  //mysqli_query($ml,"UPDATE files SET f_instruments='$f_instruments' WHERE f_id='$f_id'");
+  //echo mysqli_error($ml);
+  inject_config($waj[2], "Instruments", $f_instruments);
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
 
@@ -126,6 +133,7 @@ if ($action == "jconfig" && $j_id && $uid) {
   load_file();
   if ($wj['j_state'] > 0) {
     deactivate_job();
+    $create_cause = "Changed config file";
     $j_id = create_job($wj['j_type'], $wj['j_class'], $wj['j_timeout'], $wj['j_timeout2'],
       $wj['j_priority'], $wj['j_engrave'], $wj['j_render']);
     copy_job_config($wj['j_class']);

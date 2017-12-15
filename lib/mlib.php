@@ -6,6 +6,9 @@ $bheight2 = 36;
 $wf = 0;
 $wj = 0;
 $waj = 0;
+$waj = array();
+$caa = 0;
+$caa = array();
 
 $ftypes = array(
   'CA1' => "Cantus firmus",
@@ -79,8 +82,7 @@ function load_job_config() {
   $jconfig = file_get_contents("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl");
 }
 
-function parse_job_config() {
-  GLOBAL $ca, $wj;
+function parse_job_config($wj) {
   $ca = array();
   $fa = file("share/" . $wj['j_folder'] . bfname($wj['f_name']) . ".pl");
   for($i=0; $i<count($fa); ++$i) {
@@ -92,11 +94,21 @@ function parse_job_config() {
     $pos = strpos($st, "=");
     if ($pos !== false) {
       $key = substr($st, 0, $pos);
-      $val = substr($st, 0, $pos);
+      $val = substr($st, $pos+1, strlen($st));
       $key = trim($key);
       $val = trim($val);
+      $key = strtolower($key);
       $ca[$key] = $val;
     }
+  }
+  return $ca;
+}
+
+function parse_jobs_config() {
+  GLOBAL $caa, $waj;
+  $caa = array();
+  foreach($waj as $key => $val) {
+    $caa[$key] = parse_job_config($val);
   }
 }
 
@@ -127,13 +139,13 @@ function get_typename($t) {
 }
 
 function create_job($j_type, $j_class, $j_timeout, $j_timeout2, $j_priority, $j_engrave, $j_render) {
-  GLOBAL $ml, $uid, $f_id, $wf;
+  GLOBAL $ml, $uid, $f_id, $wf, $create_cause;
   // Create job draft
   mysqli_query($ml, "INSERT INTO jobs 
     (j_added, j_priority, j_type, j_class, f_id, j_timeout, j_timeout2, 
-    j_engrave, j_render)
+    j_engrave, j_render, j_cause)
     VALUES(NOW(), '$j_priority', '$j_type', '$j_class', '$f_id', '$j_timeout', '$j_timeout2', 
-    '$j_engrave', '$j_render')");
+    '$j_engrave', '$j_render', '$create_cause')");
   echo mysqli_error($ml);
   // Set job folder
   $j_id = mysqli_insert_id($ml);
@@ -190,6 +202,7 @@ function copy_job_config($j_class) {
   copy($fname_pl2, $fname_pl);
 }
 
+// Specifying j_class will create jobs only of this class
 function create_jobs($f_type, $j_class=-1) {
   if ($f_type == "CA1" || $f_type == "CA2") {
     if ($j_class == -1 || $j_class == 0)

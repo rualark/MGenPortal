@@ -54,6 +54,7 @@ function upload_file() {
 
   load_file();
   // Create jobs
+  $create_cause = "Upload new file";
   create_jobs($f_type);
   load_active_jobs();
   inject_config($waj[2], "Instruments", $default_ilist);

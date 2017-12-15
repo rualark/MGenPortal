@@ -116,7 +116,7 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight, $MAX_INSTR;
+  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight, $MAX_INSTR, $caa;
   echo "<div class=container>";
   echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'><img src='img/midi.png' height='$bheight'></a> $wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
@@ -160,7 +160,7 @@ function show_upload() {
     echo "<label for=ilist_size class='col-sm-2 col-form-label'>Voices:</label>";
     echo "<div class=col-sm-10>";
     echo "<select class=\"custom-select\" id=ilist_size name=ilist_size onChange='this.form.submit();'>";
-    $ia = explode(",", $wf['f_instruments']);
+    $ia = explode(",", $caa[2]['instruments']);
     for ($i=1; $i<$MAX_INSTR; ++$i) {
       echo "<option value=$i";
       if ($i == count($ia)) echo " selected";
@@ -176,7 +176,7 @@ function show_upload() {
     echo "<div class='form-group row'>";
     echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
     echo "<div class=col-sm-10>";
-    show_iselects($wf['f_instruments']);
+    show_iselects($caa[2]['instruments']);
     echo "<button type=submit name=submit class=\"btn btn-primary\">Save</button>";
     echo "</div></div>";
     echo "</form>";
@@ -188,7 +188,7 @@ function show_upload() {
     echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
     echo "<div class=col-sm-8>";
 
-    echo "<input class='form-control' id=f_instruments type=text size=80 value='$wf[f_instruments]' name=f_instruments list='instlist'>";
+    echo "<input class='form-control' id=f_instruments type=text size=80 value='".$caa[2]['instruments']."' name=f_instruments list='instlist'>";
     echo "<datalist id=instlist>";
     $r = mysqli_query($ml, "SELECT * FROM i_lists");
     echo mysqli_error($ml);
@@ -224,7 +224,7 @@ function show_upload() {
     echo "<div class='form-group row'>";
     echo "<label class='col-sm-2 col-form-label'>Instruments:</label>";
     echo "<div class=col-sm-10>";
-    echo "<input class='form-control' name=f_instruments value='$wf[f_instruments]' readonly>";
+    echo "<input class='form-control' name=f_instruments value='".$caa[2]['instruments']."' readonly>";
     echo "</div></div>";
     echo "</form>";
   }
