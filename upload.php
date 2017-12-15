@@ -5,6 +5,7 @@ require_once "lib/auth.php";
 require_once "lib/reports.php";
 
 $title = "$site_name: Upload";
+$upload_error = "";
 
 if (!login()) {
   die ("<script language=javascript>location.replace('index.php');</script>");
@@ -16,7 +17,7 @@ if (isset($_POST['submit'])) {
 }
 
 function upload_file() {
-  GLOBAL $upload_error, $ml, $uid, $default_ilist, $f_id;
+  GLOBAL $upload_error, $ml, $uid, $waj, $default_ilist, $f_id;
   if ($_FILES["file"]["error"] > 0) {
     $upload_error = "Error: " . $_FILES["file"]["error"];
     return 1;
@@ -55,7 +56,7 @@ function upload_file() {
   create_jobs_ca();
   create_jobs_mp();
   load_active_jobs();
-  inject_config(2, "Instruments", $wf['f_instruments']);
+  inject_config($waj[2], "Instruments", $default_ilist);
   //echo "New name: $fname2<br>";
   //echo "Upload: " . $_FILES["file"]["name"] . "<br />";
   //echo "Type: " . $_FILES["file"]["type"] . "<br />";

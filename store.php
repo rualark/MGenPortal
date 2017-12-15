@@ -64,15 +64,15 @@ if ($action == "f_instruments" && $uid && $f_id) {
   load_file();
   load_active_jobs();
   // Recreate job if it is not draft already
-  if (isset($wj[2]) && $wj[2]['j_state'] > 0) {
+  if (isset($waj[2]) && $waj[2]['j_state'] > 0) {
     deactivate_jobs_mp();
     create_jobs_mp();
     copy_job("MP1", 2);
     delete_old_drafts();
     load_active_jobs();
   }
-  if (isset($wj[2])) {
-    inject_config(2, "Instruments", $f_instruments);
+  if (isset($waj[2])) {
+    inject_config($waj[2], "Instruments", $f_instruments);
   }
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }
@@ -102,7 +102,7 @@ if ($action == "startjob" && $uid && $j_id) {
     die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
   }
   // Update field
-  mysqli_query($ml,"UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id' AND j_deleted=0 AND j_state=0");
+  mysqli_query($ml,"UPDATE jobs SET j_state=1, j_queued=NOW() WHERE j_id='$j_id'");
   echo mysqli_error($ml);
   die ("<script language=javascript>location.replace('job.php?j_id=$j_id');</script>");
 }
@@ -112,7 +112,7 @@ if ($action == "jconfig" && $j_id && $uid) {
   //echo "<pre>";
   //echo $jconfig;
   load_job();
-  $f_id = $wj['f_id'];
+  load_file();
   if ($wj['j_state'] > 0) {
     deactivate_job();
     $j_id = create_job($wj['j_type'], $wj['j_class'], $wj['j_timeout'], $wj['j_timeout2'],
