@@ -275,12 +275,13 @@ function show_status() {
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<div class=col-sm-4>";
-    echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png' title='#";
-    if ($w['pass'] < 5) echo "\n".human_pass($w['os_age'])." since OS restart";
+    echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png' title='";
+    if ($w['pass'] < 5) echo human_pass($w['os_age'])." since OS restart";
     echo "' class='img-fluid img-thumbnail'></a>";
     echo "<br>";
     echo "#$w[s_id]: $w[s_host]";
     if ($w['pass'] < 5) {
+      if ($w['j_id']) echo "<br>Job running: <a href='job.php?j_id=$w[j_id]'>#$w[j_id]</a>";
       echo "<p title='Last update $w[pass] seconds ago' class=text-success><b>Online for ".human_pass($w['server_age'])."</b></p>";
       if ($w['reaper_age'] > 0) echo "<img title='Reaper online for ".human_pass($w['reaper_age'])."' src='img/reaper.png' height=$bheight2> ";
       else echo "<img title='Reaper offline' src='img/reaper_gray.png' height=$bheight2> ";
