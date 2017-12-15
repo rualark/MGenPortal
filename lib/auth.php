@@ -17,7 +17,7 @@ function add_auth_error($st) {
 }
 
 function regdata_valid() {
-  GLOBAL $ml, $login, $password, $auth_error;
+  GLOBAL $ml, $login, $auth_error;
   $r = mysqli_query($ml,"SELECT * FROM users WHERE u_login='$login'");
   echo mysqli_error($ml);
   if (mysqli_errno($ml)) {
@@ -27,6 +27,15 @@ function regdata_valid() {
   if (mysqli_num_rows($r) > 0) {
     $auth_error = "This email is already taken";
   }
+  if (!filter_var($login, FILTER_VALIDATE_EMAIL)) {
+    add_auth_error("Email address format is wrong");
+  }
+  if ($auth_error != "") return 0;
+  return 1;
+}
+
+function pass_valid() {
+  GLOBAL $password, $auth_error;
   if (strlen($password) < '7') {
     add_auth_error("Your password should contain at least 7 characters!");
   }
@@ -38,9 +47,6 @@ function regdata_valid() {
   }
   elseif(!preg_match("#[a-z]+#",$password)) {
     add_auth_error("Your password should contain at least 1 lowercase letter!");
-  }
-  if (!filter_var($login, FILTER_VALIDATE_EMAIL)) {
-    add_auth_error("Email address format is wrong");
   }
   if ($auth_error != "") return 0;
   return 1;

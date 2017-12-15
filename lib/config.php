@@ -1,4 +1,6 @@
 <?
+$domain_main = "artportal.su";
+$url_main = "http://$domain_main/ctracker";
 $mail_method = "sendmail";
 $mail_params = array('sendmail_path' => 'c:\openserver\modules\sendmail\sendmail.exe -t');
 $os = "win";

@@ -14,7 +14,7 @@ if (login()) {
 }
 
 if (isset($_POST['register'])) {
-  if (regdata_valid()) {
+  if (regdata_valid() && pass_valid()) {
     $salt = mt_rand(100000, 999999);
     $pass_md5 = md5(md5($password) . $salt);
     mysqli_query($ml, "INSERT INTO users (u_login,u_pass,u_salt,u_name,u_regtime) 

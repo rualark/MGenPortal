@@ -40,8 +40,8 @@ function upload_file() {
   $f_type = "CA2";
   // Insert into sql
   mysqli_query($ml, "INSERT INTO files 
-    (f_name, f_time, f_private, u_id, f_format, f_source, f_type, f_instruments)
-    VALUES('$fname2', NOW(), 0, '$uid', 'MIDI', '$fname', '$f_type', '$default_ilist')");
+    (f_name, f_time, f_private, u_id, f_format, f_source, f_type)
+    VALUES('$fname2', NOW(), 0, '$uid', 'MIDI', '$fname', '$f_type')");
   echo mysqli_error($ml);
   // Set job folder
   $f_id = mysqli_insert_id($ml);
