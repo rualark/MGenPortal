@@ -64,6 +64,12 @@ if ($action == "f_instruments" && $uid && $f_id) {
   if ($wf['u_id'] != $uid) {
     die ("<script language=javascript>location.replace('index.php');</script>");
   }
+  // Build f_instruments
+  for ($i=0; $i<$MAX_INSTR; ++$i) {
+    if (!isset($_POST["isel$i"])) break;
+    if ($f_instruments != "") $f_instruments .= ",";
+    $f_instruments .= $_POST["isel$i"];
+  }
   // Update field
   mysqli_query($ml,"UPDATE files SET f_instruments='$f_instruments' WHERE f_id='$f_id'");
   echo mysqli_error($ml);

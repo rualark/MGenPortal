@@ -17,7 +17,7 @@ if (isset($_POST['submit'])) {
 }
 
 function upload_file() {
-  GLOBAL $upload_error, $ml, $uid, $waj, $default_ilist, $f_id;
+  GLOBAL $upload_error, $ml, $uid, $waj, $default_ilist, $f_id, $create_cause;
   if ($_FILES["file"]["error"] > 0) {
     $upload_error = "Error: " . $_FILES["file"]["error"];
     return 1;

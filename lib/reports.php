@@ -90,9 +90,9 @@ function show_uploads() {
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
     echo "<tr>";
-    echo "<td align='center'><a href='file.php?f_id=$w[f_id]'>$w[f_time]</td>";
+    echo "<td align='center'>$w[f_time]</td>";
     echo "<td align='center'>$w[u_name]</td>";
-    echo "<td align='center'><a target=_blank href='share/" . furl($w) . "'>$w[f_name]</td>";
+    echo "<td align='center'><a href='file.php?f_id=$w[f_id]'>$w[f_name]</td>";
     echo "<td align='center'>".$ftypes2[$w['f_type']]."</td>";
     $r2 = mysqli_query($ml, "SELECT * FROM jobs WHERE f_id='$w[f_id]' ORDER BY j_added");
     echo mysqli_error($ml);
@@ -116,7 +116,7 @@ function show_uploads() {
 }
 
 function show_upload() {
-  GLOBAL $uid, $ml, $f_id, $wf, $ftypes, $vtypes, $bheight, $MAX_INSTR, $caa;
+  GLOBAL $uid, $f_id, $wf, $ftypes, $vtypes, $bheight, $MAX_INSTR, $caa;
   echo "<div class=container>";
   echo "<br><h2 align=center><a href='share/$wf[f_folder]$wf[f_name]'><img src='img/midi.png' height='$bheight'></a> $wf[f_name] uploaded by $wf[u_name]</h2>";
   echo "<hr>";
@@ -179,30 +179,6 @@ function show_upload() {
     show_iselects($caa[2]['instruments']);
     echo "<button type=submit name=submit class=\"btn btn-primary\">Save</button>";
     echo "</div></div>";
-    echo "</form>";
-
-    echo "<form action=store.php method=post>";
-    echo "<input type=hidden name=f_id value='$f_id'>";
-    echo "<input type=hidden name=action value=f_instruments>";
-    echo "<div class='form-group row'>";
-    echo "<label for=f_instruments class='col-sm-2 col-form-label'>Instruments:</label>";
-    echo "<div class=col-sm-8>";
-
-    echo "<input class='form-control' id=f_instruments type=text size=80 value='".$caa[2]['instruments']."' name=f_instruments list='instlist'>";
-    echo "<datalist id=instlist>";
-    $r = mysqli_query($ml, "SELECT * FROM i_lists");
-    echo mysqli_error($ml);
-    $n = mysqli_num_rows($r);
-    for ($i=0; $i<$n; ++$i) {
-      $w = mysqli_fetch_assoc($r);
-      echo "<option value='$w[il_text]'></option>";
-    }
-    echo "</datalist>";
-    echo "</div>";
-    echo "<div class='col-sm-2 text-right'>";
-    echo "<button type=submit name=submit class=\"btn btn-primary\">Save</button>";
-    echo "</div>";
-    echo "</div>";
     echo "</form>";
   } else {
     echo "<form action=store.php method=post>";
@@ -275,7 +251,7 @@ function show_jobs($f_id, $j_id=0) {
     echo "<td $class align='center'>".$jclasses[$wj['j_class']]."</td>";
     echo "<td $class align=center>";
     echo show_job_icon($wj, $wj['j_class'], 2);
-    echo "<td $class align='center'><a href='job.php?j_id=$wj[j_id]'>$wj[j_added]</td>";
+    echo "<td $class align='center'><a title='$wj[j_cause]' href='job.php?j_id=$wj[j_id]'>$wj[j_added]</td>";
     echo "<td $class align='center'>";
     if ($wj['j_started'] + 0) echo "$wj[j_started]</td>";
     else echo "-";
@@ -355,11 +331,25 @@ function show_job() {
     else
       echo  "<p style='color:lightgray' align='right'>Cannot restart - this job has not finished yet</p>";
   }
+  echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
   echo "<p><b>Processing server:</b> ";
   if ($wj['s_id']) echo "<a href=status.php>#$wj[s_id]</a>";
   echo "<p><b>Priority:</b> $wj[j_priority] ";
   echo "<p><b>Progress:</b> $wj[j_progress]</p>";
-  echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
+  if ($wj['j_state'] == 2) {
+    $r = mysqli_query($ml, "SELECT *, 
+      TIMESTAMPDIFF(SECOND, last_update, NOW()) as pass 
+      FROM s_status
+      WHERE s_id='$wj[s_id]'");
+    echo mysqli_error($ml);
+    $w = mysqli_fetch_assoc($r);
+    if ($w['pass'] < 5) {
+      echo "<div class=col-sm-4>";
+      echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png'";
+      echo " class='img-fluid img-thumbnail'></a>";
+      echo "</div><br>";
+    }
+  }
   echo "<p><a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[f_folder]/$wj[f_name]'>Initial file</a> ";
   echo "<a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[j_folder]'>Browse config, results and logs (job folder)</a>";
   $r = mysqli_query($ml, "SELECT * FROM j_logs WHERE j_id='$j_id'
@@ -431,36 +421,27 @@ function show_job_editor() {
   <script src=\"plugin/codemirror/mode/perl/perl.js\"></script>
   <script>
     $(document).ready(function(){
-        //code here...
-        var code = $(\".codemirror-textarea\")[0];
-        var editor = CodeMirror.fromTextArea(code, {
-            lineNumbers : false,
-            matchBrackets: true,
-            mode: 'perl',
-            styleActiveLine: true,
-            indentUnit: 2,
-            readOnly: $cm_readonly,
-            theme: '$cm_theme',
-            extraKeys: {
-                \"Alt-F\": \"findPersistent\",
-                \"F11\": function(cm) {
-                    cm.setOption(\"fullScreen\", !cm.getOption(\"fullScreen\"));
-                },
-                \"Esc\": function(cm) {
-                    if (cm.getOption(\"fullScreen\")) cm.setOption(\"fullScreen\", false);
-                }
-            }
-        });
-        editor.display.wrapper.style.fontSize = \"16px\";
-        editor.setSize(\"100%\", 500);
-
-        //when form submitted
-        $(\"#preview-form\").submit(function(e){
-            var value = editor.getValue();
-            if(value.length == 0) {
-                alert(\"Missing comment!\");
-            }
-        });
+      var code = $(\".codemirror-textarea\")[0];
+      var editor = CodeMirror.fromTextArea(code, {
+        lineNumbers : false,
+        matchBrackets: true,
+        mode: 'perl',
+        styleActiveLine: true,
+        indentUnit: 2,
+        readOnly: $cm_readonly,
+        theme: '$cm_theme',
+        extraKeys: {
+          \"Alt-F\": \"findPersistent\",
+          \"F11\": function(cm) {
+            cm.setOption(\"fullScreen\", !cm.getOption(\"fullScreen\"));
+          },
+          \"Esc\": function(cm) {
+            if (cm.getOption(\"fullScreen\")) cm.setOption(\"fullScreen\", false);
+          }
+        }
+      });
+      editor.display.wrapper.style.fontSize = \"16px\";
+      editor.setSize(\"100%\", 500);
     });
   </script>";
 }
