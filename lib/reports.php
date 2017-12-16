@@ -264,26 +264,42 @@ function show_jobs($f_id, $j_id=0) {
   echo "</table>";
 }
 
-function show_status() {
+function show_status($s_id = 0) {
   GLOBAL $ml, $bheight2;
   echo "<div class=container>";
   // Show servers
-  echo "<br><h2>Processing servers:</h2><br>"; //  align=center
+  if ($s_id) echo "<br><h2 align=center>Processing server #$s_id</h2><br>";
+  else echo "<br><h2>Processing servers:</h2><br>"; //  align=center
   echo "<div class=row>";
+  $cond = "";
+  if ($s_id) $cond = " WHERE s_id='$s_id'";
   $r = mysqli_query($ml, "SELECT *, 
     TIMESTAMPDIFF(SECOND, last_update, NOW()) as pass 
     FROM s_status
+    $cond
     ORDER BY pass>5, server_age DESC");
   echo mysqli_error($ml);
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
-    echo "<div class=col-sm-4>";
+    if ($s_id) echo "<div class=col-sm-8 style='margin: 0 auto;'>";
+    else echo "<div class=col-sm-4>";
     echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png' title='";
+    echo get_last_server_log($w['s_id']) . "\n";
     if ($w['pass'] < 5) echo human_pass($w['os_age'])." since OS restart";
     echo "' class='img-fluid img-thumbnail'></a>";
+    if ($s_id) {
+      echo "<div class=row>";
+      for ($x=0; $x<8; $x++) {
+        $scr_id = ($w['screenshot_id'] + 9 - $x) % 10;
+        echo "<div class=col-sm-1>";
+        echo "<a href='share/screen$w[s_id]-$scr_id.png' target=_blank><img class='img-fluid' src='share/screen$w[s_id]-$scr_id.png'></a>";
+        echo "</div>";
+      }
+      echo "</div>";
+    }
     echo "<br>";
-    echo "#$w[s_id]: $w[s_host]";
+    echo "<a href='status.php?s_id=$w[s_id]'>#$w[s_id]: $w[s_host]</a>";
     if ($w['pass'] < 5) {
       if ($w['j_id']) echo "<br>Job running: <a href='job.php?j_id=$w[j_id]'>#$w[j_id]</a>";
       echo "<p title='Last update $w[pass] seconds ago' class=text-success><b>Online for ".human_pass($w['server_age'])."</b></p>";
@@ -302,6 +318,9 @@ function show_status() {
     echo "</div>";
   }
   echo "</div>";
+  if ($s_id) {
+    show_server_logs($s_id);
+  }
   $r = mysqli_query($ml, "SELECT COUNT(*) as cnt FROM jobs WHERE j_state=1 AND j_deleted=0");
   echo mysqli_error($ml);
   $w = mysqli_fetch_assoc($r);
@@ -312,6 +331,24 @@ function show_status() {
   echo mysqli_error($ml);
   $w = mysqli_fetch_assoc($r);
   echo "<p class='lead'><img src='img/play.png' height='$bheight2'> Jobs running: $w[cnt]</p>"; //  align=center
+}
+
+function show_server_logs($s_id) {
+  GLOBAL $ml;
+  $r = mysqli_query($ml, "SELECT * FROM j_logs WHERE s_id='$s_id'
+    ORDER BY l_id DESC LIMIT 100");
+  echo mysqli_error($ml);
+  $n = mysqli_num_rows($r);
+  if ($n) {
+    echo "<hr><h3>Server logs:</h3>";
+    echo "<pre>";
+    for ($i=0; $i<$n; ++$i) {
+      $w = mysqli_fetch_assoc($r);
+      if ($w['j_id']) echo "<a href='job.php?j_id=$w[j_id]'>";
+      echo "$w[l_time] $w[l_text]</a>\n";
+    }
+    echo "</pre>";
+  }
 }
 
 function show_job() {
@@ -335,7 +372,7 @@ function show_job() {
   }
   echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
   echo "<p><b>Processing server:</b> ";
-  if ($wj['s_id']) echo "<a href=status.php>#$wj[s_id]</a>";
+  if ($wj['s_id']) echo "<a href='status.php?s_id=$wj[s_id]'>#$wj[s_id]</a>";
   echo "<p><b>Priority:</b> $wj[j_priority] ";
   echo "<p><b>Progress:</b> $wj[j_progress]</p>";
   if ($wj['j_state'] == 2) {
@@ -355,7 +392,7 @@ function show_job() {
   echo "<p><a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[f_folder]/$wj[f_name]'>Initial file</a> ";
   echo "<a class=\"btn btn-outline-primary\" target=_blank href='share/$wj[j_folder]'>Browse config, results and logs (job folder)</a>";
   $r = mysqli_query($ml, "SELECT * FROM j_logs WHERE j_id='$j_id'
-    ORDER BY l_time DESC");
+    ORDER BY l_id DESC LIMIT 100");
   echo mysqli_error($ml);
   $n = mysqli_num_rows($r);
   if ($n) {

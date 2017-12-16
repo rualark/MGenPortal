@@ -261,4 +261,17 @@ function change_ilist_len($ilist, $len) {
   return $ilist;
 }
 
+function get_last_server_log($s_id) {
+  GLOBAL $ml;
+  $r = mysqli_query($ml, "SELECT * FROM j_logs 
+    WHERE s_id='$s_id'
+    ORDER BY l_id DESC LIMIT 1");
+  echo mysqli_error($ml);
+  if (mysqli_num_rows($r)) {
+    $w = mysqli_fetch_assoc($r);
+    return $w['l_text'];
+  }
+  return "";
+}
+
 ?>
