@@ -4,7 +4,9 @@ require_once "lib/config.php";
 require_once "lib/auth.php";
 require_once "lib/reports.php";
 
-$title = "$site_name: Upload";
+$s_id = secure_variable("s_id");
+
+$title = "$site_name: Status";
 
 if (!login()) {
   die ("<script language=javascript>location.replace('index.php');</script>");
@@ -12,7 +14,7 @@ if (!login()) {
 
 include "template/menu.php";
 
-show_status();
+show_status($s_id);
 
 include "template/footer.php";
 ?>
