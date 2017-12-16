@@ -243,12 +243,14 @@ function show_jobs($f_id, $j_id=0) {
     echo "<tr>";
     $class = "";
     if ($wj['j_deleted']) $class = "class=table-secondary";
-    echo "<td $class align=center>";
+    echo "<td $class align=center><div id='js$wj[j_id]'>";
     echo show_job_icon($wj, $wj['j_class'], 1);
+    echo "</div>";
     echo "<td $class align='center'>".$ftypes2[$wj['j_type']]."</td>";
     echo "<td $class align='center'>".$jclasses[$wj['j_class']]."</td>";
-    echo "<td $class align=center>";
+    echo "<td $class align=center><div id='jr$wj[j_id]'>";
     echo show_job_icon($wj, $wj['j_class'], 2);
+    echo "</div>";
     echo "<td $class align='center' title='$wj[j_cause]'>$wj[j_added]</td>";
     echo "</tr>\n";
   }
@@ -375,13 +377,13 @@ function show_job() {
   if ($wj['j_started'] + 0) echo "$wj[j_started]";
   else echo "-";
   echo "<p><b>Run duration :</b> ";
-  if ($wj['j_duration'] + 0) echo "$wj[j_started] seconds";
+  if ($wj['j_duration'] + 0) echo "$wj[j_duration] seconds";
   else echo "-";
   echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
   echo "<p><b>Processing server:</b> ";
   if ($wj['s_id']) echo "<a href='status.php?s_id=$wj[s_id]'>#$wj[s_id]</a>";
   echo "<p><b>Priority:</b> $wj[j_priority] ";
-  echo "<p><b>Progress:</b> $wj[j_progress]</p>";
+  echo "<p><b>Progress:</b> <span id='jp$wj[j_id]'>$wj[j_progress]</span></p>";
   if ($wj['j_state'] == 2) {
     $r = mysqli_query($ml, "SELECT *, 
       TIMESTAMPDIFF(SECOND, last_update, NOW()) as pass 
@@ -390,7 +392,7 @@ function show_job() {
     echo mysqli_error($ml);
     $w = mysqli_fetch_assoc($r);
     if ($w['pass'] < 5) {
-      echo "<div class=col-sm-4>";
+      echo "<div id='jsc$j_id' class=col-sm-6>";
       echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png'";
       echo " class='img-fluid img-thumbnail'></a>";
       echo "</div><br>";
