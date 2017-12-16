@@ -122,6 +122,10 @@ if ($action == "startjob" && $uid && $j_id) {
 
 if ($action == "ilist_size" && $uid && $f_id && $ilist_size) {
   load_file();
+  // Check authority
+  if ($wf['u_id'] != $uid) {
+    die ("<script language=javascript>location.replace('index.php');</script>");
+  }
   load_active_jobs();
   parse_jobs_config();
   $f_instruments = change_ilist_len($caa[2]['instruments'], $ilist_size);
@@ -133,9 +137,11 @@ if ($action == "ilist_size" && $uid && $f_id && $ilist_size) {
 
 if ($action == "jconfig" && $j_id && $uid) {
   $jconfig = stripslashes(str_replace("\\r\\n", "\r\n", $jconfig));
-  //echo "<pre>";
-  //echo $jconfig;
+  // Check authority
   load_job();
+  if ($wj['u_id'] != $uid) {
+    die ("<script language=javascript>location.replace('index.php');</script>");
+  }
   load_file();
   if ($wj['j_state'] > 0) {
     deactivate_job();
