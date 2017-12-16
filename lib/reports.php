@@ -31,9 +31,9 @@ function show_job_icon($w, $c, $t=0) {
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
       return "<a title='Will run after ".get_job_queue_place($w)." jobs\nWaiting in queue for ".
-        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><b>Queued...</b>";
     if ($w['j_state'] == 2)
-      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><b>Running...</b>";
     if ($w['j_state'] == 3 && $w['j_result'])
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     if ($c == 2)
@@ -47,9 +47,9 @@ function show_job_icon($w, $c, $t=0) {
       return "<a title='Need to manually start this job' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/draft.png>";
     if ($w['j_state'] == 1)
       return "<a title='Will run after ".get_job_queue_place($w)." jobs\nWaiting in queue for ".
-        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/pause.png>";
+        human_pass(get_job_queue_wait($w))." already' href='job.php?j_id=$w[j_id]'><b>Queued...</b>";
     if ($w['j_state'] == 2)
-      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/play.png>";
+      return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><b>Running...</b>";
     if ($w['j_state'] == 3 && $w['j_result'])
       return "<a title='$w[j_progress]' href='job.php?j_id=$w[j_id]'><img height=$bheight src=img/stop.png>";
     return "<a title='Job completed OK' href='job.php?j_id=$w[j_id]'><img height=$bheight src='img/ok.png'>";
@@ -57,8 +57,8 @@ function show_job_icon($w, $c, $t=0) {
   if ($t == 2) {
     if ($w['j_state'] < 3 || $w['j_result']) return "-";
     if ($c == 2)
-      return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><img height=$bheight src='img/mp3.png'></a>";
-    else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><img height=$bheight src='img/pdf.png'></a>";
+      return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".mp3'><b>MP3</b></a>";
+    else return "<a target=_blank title='Job completed' href='share/" . bjurl($w) . ".pdf'><b>PDF</b></a>";
   }
   return "-";
 }
@@ -221,11 +221,9 @@ function show_jobs($f_id, $j_id=0) {
   echo "<tr>";
   echo "<th scope=col style='text-align: center;'>State</th>";
   echo "<th scope=col style='text-align: center;'>Type</th>";
-  echo "<th scope=col style='text-align: center;'>Class</th>";
+  echo "<th scope=col style='text-align: center;'>Job</th>";
   echo "<th scope=col style='text-align: center;'>Result</th>";
   echo "<th scope=col style='text-align: center;'>Job created</th>";
-  echo "<th scope=col style='text-align: center;'>Job started</th>";
-  echo "<th scope=col style='text-align: center;'>Duration (s)</th>";
   echo "</tr>\n";
   echo "</thead>";
   echo "<tbody>";
@@ -251,13 +249,7 @@ function show_jobs($f_id, $j_id=0) {
     echo "<td $class align='center'>".$jclasses[$wj['j_class']]."</td>";
     echo "<td $class align=center>";
     echo show_job_icon($wj, $wj['j_class'], 2);
-    echo "<td $class align='center'><a title='$wj[j_cause]' href='job.php?j_id=$wj[j_id]'>$wj[j_added]</td>";
-    echo "<td $class align='center'>";
-    if ($wj['j_started'] + 0) echo "$wj[j_started]</td>";
-    else echo "-";
-    echo "<td $class align='center'>";
-    if ($wj['j_duration']) echo "$wj[j_duration]";
-    else echo "-";
+    echo "<td $class align='center' title='$wj[j_cause]'>$wj[j_added]</td>";
     echo "</tr>\n";
   }
   echo "</tbody>";
@@ -282,18 +274,24 @@ function show_status($s_id = 0) {
   $n = mysqli_num_rows($r);
   for ($i=0; $i<$n; ++$i) {
     $w = mysqli_fetch_assoc($r);
-    if ($s_id) echo "<div class=col-sm-8 style='margin: 0 auto;'>";
-    else echo "<div class=col-sm-4>";
-    echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank><img src='share/screen$w[s_id]-$w[screenshot_id].png' title='";
+    if ($s_id) {
+      echo "<div class=col-sm-8 style='margin: 0 auto;'>";
+      echo "<a href='share/screen$w[s_id]-$w[screenshot_id].png' target=_blank>";
+    }
+    else {
+      echo "<div class=col-sm-4>";
+      echo "<a href='status.php?s_id=$w[s_id]'>";
+    }
+    echo "<img src='share/screen$w[s_id]-$w[screenshot_id].png' title='";
     echo get_last_server_log($w['s_id']) . "\n";
     if ($w['pass'] < 5) echo human_pass($w['os_age'])." since OS restart";
     echo "' class='img-fluid img-thumbnail'></a>";
     if ($s_id) {
       echo "<div class=row>";
-      for ($x=0; $x<8; $x++) {
-        $scr_id = ($w['screenshot_id'] + 9 - $x) % 10;
+      for ($x=1; $x<9; $x++) {
+        $scr_id = ($w['screenshot_id'] + 10 - $x) % 10;
         echo "<div class=col-sm-1>";
-        echo "<a href='share/screen$w[s_id]-$scr_id.png' target=_blank><img class='img-fluid' src='share/screen$w[s_id]-$scr_id.png'></a>";
+        echo "<a title='$x seconds ago' href='share/screen$w[s_id]-$scr_id.png' target=_blank><img class='img-fluid' src='share/screen$w[s_id]-$scr_id.png'></a>";
         echo "</div>";
       }
       echo "</div>";
@@ -352,12 +350,15 @@ function show_server_logs($s_id) {
 }
 
 function show_job() {
-  GLOBAL $j_id, $wj, $ml;
+  GLOBAL $j_id, $wj, $ml, $uid;
   echo "<h2 align=center>Job #$j_id for file <a href='file.php?f_id=$wj[f_id]'>$wj[f_name]</a></h2>";
   show_jobs(0, $j_id);
   echo "<hr>";
   //echo "<p><b>Job type:</b> ".$ftypes[$wj['j_type']]." / ".$jclasses[$wj['j_class']]."</p>";
-  if ($wj['j_deleted']) {
+  if ($wj['u_id'] != $uid) {
+    echo  "<p style='color:lightgray' align='right'>Cannot start - this file belongs to other user</p>";
+  }
+  else if ($wj['j_deleted']) {
     echo  "<p style='color:lightgray' align='right'>Cannot start - this job is deleted</p>";
   }
   else {
@@ -370,6 +371,12 @@ function show_job() {
     else
       echo  "<p style='color:lightgray' align='right'>Cannot restart - this job has not finished yet</p>";
   }
+  echo "<p><b>Started:</b> ";
+  if ($wj['j_started'] + 0) echo "$wj[j_started]";
+  else echo "-";
+  echo "<p><b>Run duration :</b> ";
+  if ($wj['j_duration'] + 0) echo "$wj[j_started] seconds";
+  else echo "-";
   echo "<p><b>Timeouts:</b> MGen soft $wj[j_timeout], MGen hard $wj[j_timeout2], Lilypond $wj[j_engrave], Reaper $wj[j_render]</p>";
   echo "<p><b>Processing server:</b> ";
   if ($wj['s_id']) echo "<a href='status.php?s_id=$wj[s_id]'>#$wj[s_id]</a>";
@@ -413,8 +420,8 @@ function show_job() {
 }
 
 function show_job_editor() {
-  GLOBAL $jconfig, $j_id, $cm_theme, $wj;
-  if ($wj['j_deleted'] == 0) {
+  GLOBAL $jconfig, $j_id, $cm_theme, $wj, $uid;
+  if ($wj['j_deleted'] == 0 && $wj['u_id'] == $uid) {
     $cm_theme = "material";
     $cm_readonly = "false";
   }
@@ -436,7 +443,10 @@ function show_job_editor() {
   echo $jconfig;
   echo "</textarea>";
   echo "<br>";
-  if ($wj['j_deleted'] == 0) {
+  if ($wj['u_id'] != $uid) {
+    echo "<p class='text-danger'>You cannot change config because this file belongs to other user.</p>";
+  }
+  else if ($wj['j_deleted'] == 0) {
     echo "<button type=submit value=submit name=submit class='btn btn-primary'>Save config</button> ";
     echo " <a target='_blank' class=\"btn btn-outline-primary\" href=\"https://github.com/rualark/MGenPortal/wiki/Editing-job-configuration#user-content-job-config-editor-keyboard-shortcuts\" role=\"button\">
     Keyboard shortcuts</a>";
