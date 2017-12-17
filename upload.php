@@ -37,7 +37,7 @@ function upload_file() {
   $fname2 = str_replace(".midi", ".mid", $fname2);
   $fname2 = preg_replace('/[^0-9a-zA-Z_\-\.]/',"",$fname2);
   if (strlen($fname2) < 7) $fname2 = date("Y-m-d-") . $fname2;
-  $f_type = "CA2";
+  $f_type = "MP1";
   // Insert into sql
   mysqli_query($ml, "INSERT INTO files 
     (f_name, f_time, f_private, u_id, f_format, f_source, f_type)
