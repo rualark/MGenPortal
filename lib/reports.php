@@ -311,8 +311,6 @@ function show_status($s_id = 0) {
       else echo "<img title='MGen offline' src='img/mgen_gray.png' height=$bheight2> ";
       if ($w['ly_age'] > 0) echo "<img title='Lilypond online for ".human_pass($w['ly_age'])."' src='img/ly.png' height=$bheight2> ";
       else echo "<img title='Lilypond offline' src='img/ly_gray.png' height=$bheight2> ";
-      if ($w['roc_age'] > 0) echo "<img title='RestartOnCrash online for ".human_pass($w['roc_age'])."' src='img/roc.png' height=$bheight2> ";
-      else echo "<img title='RestartOnCrash offline' src='img/roc_gray.png' height=$bheight2> ";
     }
     else echo "<p title='Was online $w[last_update]' class=text-danger><b>Offline for ".human_pass($w['pass'])."</b></p>";
     echo "</div>";
