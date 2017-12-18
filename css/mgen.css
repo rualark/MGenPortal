@@ -27,5 +27,10 @@ body {
 }
 .CodeMirror {
   border: 1px solid silver;
-  border-width: 1px 2px;
+}
+.btn-grid {
+  margin: -2px 0;
+}
+.btn-grid > .btn {
+  margin: 2px 0;
 }
