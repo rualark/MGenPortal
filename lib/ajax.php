@@ -3,10 +3,10 @@ function periodic_update($url, $ms) {
 ?>
 
   <script>
-  function update_element(element, index, array) {
+  function update_element(element) {
     var d = element.split('|');
     var div = document.getElementById(d[0]);
-    div.innerHTML = d[1];
+    if (div !== null) div.innerHTML = d[1];
   }
 
   (function periodic_update() {
