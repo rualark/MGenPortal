@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <?php
+  share_header("$url_share",
+    "$site_name",
+    "Analyze, correct and perform your music with professional-grade virtual instruments",
+    "$url_share/img/ctracker_600.png");
+  ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
@@ -17,6 +23,10 @@
 </head>
 
 <body>
+<?php
+require_once __DIR__ . "/../analytics.php";
+show_chatovod("artquiz");
+?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
   <div class="container">
