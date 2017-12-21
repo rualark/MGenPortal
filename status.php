@@ -15,6 +15,8 @@ if (!login()) {
 include "template/menu.php";
 
 show_status($s_id);
+echo "<br><h2>Last jobs:</h2><br>"; //  align=center
+show_jobs(0);
 
 include "template/footer.php";
 ?>
