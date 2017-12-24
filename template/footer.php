@@ -2,7 +2,10 @@
 
 <footer class="container">
   <p>&copy; <a href="http://arkhipenko.weebly.com" target="_blank">Aleksey Arkhipenko</a>,
-    <a href="http://www.alekseyshegolev.com/" target="_blank">Aleksey Shegolev</a>  2017</p>
+    <a href="http://www.alekseyshegolev.com/" target="_blank">Aleksey Shegolev</a> 2017
+    - <a href="contact.php">Contact</a> - <a href="privacy.php">Privacy Policy</a> -
+    <a href="tos.php">Terms and Conditions</a>
+  </p>
 </footer>
 
 <!-- Bootstrap core JavaScript -->

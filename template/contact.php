@@ -14,12 +14,12 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6" style="margin: 0 auto;">
-          <h3 style='color: black' align=center>Please contact me by email:</h3>
+          <h3 style='color: black' align=center>Please contact us by email:</h3>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6" style="margin: 0 auto;">
-          <h3 style='color: black' align=center>rualark (at) gmail.com</h3>
+          <h3 style='color: black' align=center><?=$company_email ?></h3>
         </div>
       </div>
     </div>

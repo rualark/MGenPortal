@@ -120,7 +120,7 @@
         <div class="col-md-6" style="margin: 0 auto;">
           <h1 style='color: black' align=center>Ensure your privacy</h1>
           <p style='color: black' class=lead align="center">
-            When uploading your music, mark it private so that only you will be able to access it.
+            When uploading your music, mark it private so that other site users will not see it listed in the table of uploaded files.
           </p>
         </div>
       </div>
