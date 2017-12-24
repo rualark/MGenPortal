@@ -3,6 +3,7 @@ require_once "lib/mlib.php";
 require_once "lib/config.php";
 require_once "lib/auth.php";
 require_once "lib/reports.php";
+require_once "lib/midi_lib.php";
 
 $title = "$site_name: Upload";
 $upload_error = "";
@@ -17,7 +18,8 @@ if (isset($_POST['submit'])) {
 }
 
 function upload_file() {
-  GLOBAL $upload_error, $ml, $uid, $waj, $default_ilist, $f_id, $create_cause;
+  GLOBAL $upload_error, $ml, $uid, $waj, $default_ilist, $f_id, $create_cause, $midiclass,
+  $track_count, $track_name;
   if ($_FILES["file"]["error"] > 0) {
     $upload_error = "Error: " . $_FILES["file"]["error"];
     return 1;
@@ -41,7 +43,7 @@ function upload_file() {
   // Insert into sql
   mysqli_query($ml, "INSERT INTO files 
     (f_name, f_time, f_private, u_id, f_format, f_source, f_type, f_store)
-    VALUES('$fname2', NOW(), 0, '$uid', 'MIDI', '$fname', '$f_type', 31)");
+    VALUES('".mysqli_escape_string($ml, $fname2)."', NOW(), 0, '$uid', 'MIDI', '$fname', '$f_type', 31)");
   echo mysqli_error($ml);
   // Set job folder
   $f_id = mysqli_insert_id($ml);
@@ -58,6 +60,24 @@ function upload_file() {
   create_jobs($f_type);
   load_active_jobs();
   inject_config($waj[2], "Instruments", $default_ilist);
+
+  // Load midi file
+  $midiclass->importMid("share/" . $f_folder . $fname2);
+  get_tracknames();
+  if ($track_count) {
+    mysqli_query($ml, "UPDATE files SET 
+      f_icount='$track_count', f_name0='".mysqli_escape_string($ml, $track_name[0])."' 
+      WHERE f_id='$f_id'");
+    echo mysqli_error($ml);
+    mysqli_query($ml, "DELETE FROM finstr WHERE f_id='$f_id'");
+    echo mysqli_error($ml);
+    for ($i=0; $i<$track_count; ++$i) {
+      mysqli_query($ml, "REPLACE INTO finstr (f_id, i_lid, i_name) 
+        VALUES('$f_id', '$i', '".mysqli_escape_string($ml, $track_name[$i])."')");
+      echo mysqli_error($ml);
+    }
+  }
+
   //echo "New name: $fname2<br>";
   //echo "Upload: " . $_FILES["file"]["name"] . "<br />";
   //echo "Type: " . $_FILES["file"]["type"] . "<br />";
