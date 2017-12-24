@@ -28,6 +28,7 @@ function get_tracknames() {
           $track_name[$i] = substr($track_name[$i], 1, 1000);
         if ($track_name[$i][strlen($track_name[$i]) - 1] == "\"")
           $track_name[$i] = substr($track_name[$i], 0, strlen($track_name[$i]) - 1);
+        break;
       }
     }
   }

@@ -111,6 +111,9 @@ if ($action == "f_instruments" && $uid && $f_id) {
   }
   if (isset($waj[2])) {
     inject_config($waj[2], "Instruments", $f_instruments);
+    // Update found
+    mysqli_query($ml,"UPDATE finstr SET i_found=9 WHERE f_id='$f_id'");
+    echo mysqli_error($ml);
   }
   die ("<script language=javascript>location.replace('file.php?f_id=$f_id');</script>");
 }

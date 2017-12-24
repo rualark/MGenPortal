@@ -71,10 +71,15 @@ function upload_file() {
     echo mysqli_error($ml);
     mysqli_query($ml, "DELETE FROM finstr WHERE f_id='$f_id'");
     echo mysqli_error($ml);
-    for ($i=0; $i<$track_count; ++$i) {
-      mysqli_query($ml, "REPLACE INTO finstr (f_id, i_lid, i_name) 
-        VALUES('$f_id', '$i', '".mysqli_escape_string($ml, $track_name[$i])."')");
-      echo mysqli_error($ml);
+    if ($track_count > 1) {
+      for ($i = 1; $i < $track_count; ++$i) {
+        mysqli_query($ml, "REPLACE INTO finstr (f_id, i_lid, i_name) 
+          VALUES('$f_id', '$i', '" . mysqli_escape_string($ml, $track_name[$i]) . "')");
+        echo mysqli_error($ml);
+      }
+      load_instruments();
+      $ilist = map_instruments();
+      inject_config($waj[2], "Instruments", $ilist);
     }
   }
 
