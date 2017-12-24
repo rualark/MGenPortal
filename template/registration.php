@@ -19,6 +19,9 @@
       <input type="password" class="form-control" id="password" name=password aria-describedby="passHelp" placeholder="Password" required>
       <small id="passHelp" class="form-text text-muted">Use at least one lowercase letter, one numeral, and seven characters.</small>
     </div>
+    <div>
+      <hr><p>By clicking on "Create an account" below, you are agreeing to the <a href="tos.php" target="_blank">Terms and Conditions of Use</a> and the <a href="privacy.php" target="_blank">Privacy Policy</a>.</p>
+    </div>
     <button type=submit value=register name=register class="btn btn-primary">Create an account</button>
   </form>
 </div>
