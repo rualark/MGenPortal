@@ -40,3 +40,21 @@ pre {
   white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+blockquote {
+  border: 1px solid #b3b3b3;
+  border-left: 10px solid #b3b3b3;
+  border-radius: 0;
+  background: #fafafa;
+  font-size: 18px;
+  margin: 10px;
+  padding: 10px 20px;
+}
+.panel {
+  background-color: #EEF0F0;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+.panel-body {
+  padding: 10px;
+}

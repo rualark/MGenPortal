@@ -52,7 +52,7 @@ show_chatovod("artquiz");
           </li>
           -->
           <li class=nav-item><a class=nav-link href="files.php">Files</a></li>
-          <li class=nav-item><a class=nav-link href="https://github.com/rualark/MGenPortal/wiki" target="_blank">
+          <li class=nav-item><a class=nav-link href="docs.php">
               Docs</a></li>
           <li class=nav-item><a class=nav-link href="status.php">Status</a></li>
           <li class=nav-item><a class=nav-link href="contact.php">Contact</a></li>
