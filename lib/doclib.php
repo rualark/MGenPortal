@@ -27,10 +27,14 @@ function show_docs_menu() {
   echo "<div class='col-sm-3'>";
   echo "<div class='panel panel-default'>";
   echo "<div class='panel-body'>";
+  $first = 1;
   foreach($docs_menu as $group => $val) {
+    if (!$first) echo "<br>";
+    $first = 0;
     echo "$group<br>";
+    asort($val);
     foreach($val as $bfn => $title) {
-      if ($bfn == "index") continue;
+      //if ($bfn == "index") continue;
       echo "&nbsp;&nbsp;&nbsp;<a href='docs.php?d=$bfn'>$title</a><br>";
     }
   }
@@ -59,5 +63,7 @@ function get_docs($fname) {
   $docs_text = substr($docs_text, strpos($docs_text, "\n"));
   $Parsedown = new Parsedown();
   $docs_parsed = $Parsedown->text($docs_text);
+  // Bootstrap
+  $docs_parsed = str_replace("<table>", "<table class=table>", $docs_parsed);
 }
 ?>
