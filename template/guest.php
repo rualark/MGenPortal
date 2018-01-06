@@ -38,7 +38,7 @@
       <div class="row">
         <div class="col-md-6" style="margin: 0 auto;">
           <h1 style='color: black' align=center>Get MP3 performance of your music piece</h1>
-          <p style='color: black' class=lead align="center">Instrument Adaptation system can automatically perform of your MIDI file with professional-grade virtual instruments.
+          <p style='color: black' class=lead align="center">Instrument Adaptation system can automatically perform your MIDI file with professional-grade virtual instruments.
             Just upload your MIDI file and choose instruments to use.
             Tweak parameters to get better results.
             You can even get multitrack performance with each instrument solo in separate file.
